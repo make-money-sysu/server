@@ -7,9 +7,10 @@ import (
 )
 
 type Friends struct {
-	User1Id  *User `orm:"column(user1_id);rel(fk)"`
-	User2Id  *User `orm:"column(user2_id);rel(fk)"`
-	Accepted int8  `orm:"column(accepted)"`
+	Fid			int		`orm:"column(fid);pk"`
+	User1Id  	*User 	`orm:"column(user1_id);rel(fk)"`
+	User2Id  	*User 	`orm:"column(user2_id);rel(fk)"`
+	Accepted 	int8  	`orm:"column(accepted)"`
 }
 
 func (f *Friends) TableName() string {
