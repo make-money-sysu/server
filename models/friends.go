@@ -23,6 +23,7 @@ func init() {
 
 // 返回0为失败，返回1为发送好友请求成功或者接受好友请求成功，返回2为已经为好友关系
 func AddFriends(user1_id int, user2_id int) int {
+	// 找这两个人是否都存在
 	user1, err := GetUserById(user1_id)
 	if err != nil {
 		return 0
@@ -31,16 +32,18 @@ func AddFriends(user1_id int, user2_id int) int {
 	if err != nil {
 		return 0
 	}
+	//查找是否存在反向关系（请求或者已经接受）
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Friends))
 	cond := orm.NewCondition()
-	cond = cond.Or("User1Id", user2).Or("User2Id", user1)
+	cond = cond.And("User1Id", user2).And("User2Id", user1)
 	var values []orm.Params
 	count, err := qs.SetCond(cond).Values(&values)
 	if err != nil {
 		return 0
 	}
 	if count == 0 {
+		// 没有反向，即不是朋友，也对方没有申请加申请者为好友
 		friends := Friends{User1Id: user1, User2Id: user2, Accepted: 0}
 		_, err := o.Insert(&friends)
 		if err == nil {
@@ -51,9 +54,19 @@ func AddFriends(user1_id int, user2_id int) int {
 	} else {
 		for _, v := range values {
 			if v["Accepted"].(int8) == 0 {
+				// 对面有申请加好友，同意~
 				friends := Friends{User1Id: user2, User2Id: user1, Accepted: 1}
-				o.Update(&friends)
-				return 1
+				o.Update(&friends) // TODO:: 这里是否应该加入容错？
+
+				// 加入本人加对面的好友
+				friends1 := Friends{User1Id: user1, User2Id: user2, Accepted: 1}
+				_, err := o.Insert(&friends1)
+				if err == nil {
+					return 1
+				} else {
+					return 0
+				}
+
 			} else {
 				return 2
 			}
@@ -72,7 +85,7 @@ func GetFriends(id int, limit int64, offset int64) []Friends {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Friends))
 	cond := orm.NewCondition()
-	cond = cond.Or("User1Id", user).Or("User2Id", user)
+	cond = cond.Or("User1Id", user)  //.Or("User2Id", user)
 	qs.SetCond(cond).Filter("Accepted", 1).All(friends)
 	return friends
 }
@@ -100,7 +113,7 @@ func DeleteFriends(user1_id int, user2_id int) error {
 		return errors.New("invalid user id")
 	}
 	o := orm.NewOrm()
-	friends := Friends{User1Id: user1, User2Id: user2, Accepted: 1}
+	friends := Friends{User1Id: user1, User2Id: user2, Accepted: 1} //TODO::待测试 直觉上不用写这么详细。。
 	num1, _ := o.Delete(&friends)
 	friends = Friends{User1Id: user2, User2Id: user1, Accepted: 1}
 	num2, _ := o.Delete(&friends)
