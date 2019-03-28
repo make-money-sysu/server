@@ -32,7 +32,7 @@ create table do_survey
 );
 create table friends
 (
-	fid			int unsigned not null auto_increment primary key,
+	fid	int unsigned not null auto_increment primary key,
 	user1_id int unsigned not null,
 	user2_id int unsigned not null,
 	accepted boolean not null,

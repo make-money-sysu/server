@@ -10,7 +10,7 @@ type Friends struct {
 	Fid			int		`orm:"column(fid);pk"`
 	User1Id  	*User 	`orm:"column(user1_id);rel(fk)"`
 	User2Id  	*User 	`orm:"column(user2_id);rel(fk)"`
-	Accepted 	int8  	`orm:"column(accepted)"`
+	Accepted 	bool  	`orm:"column(accepted)"`
 }
 
 func (f *Friends) TableName() string {
@@ -44,7 +44,7 @@ func AddFriends(user1_id int, user2_id int) int {
 	}
 	if count == 0 {
 		// 没有反向，即不是朋友，也对方没有申请加申请者为好友
-		friends := Friends{User1Id: user1, User2Id: user2, Accepted: 0}
+		friends := Friends{User1Id: user1, User2Id: user2, Accepted: false}
 		_, err := o.Insert(&friends)
 		if err == nil {
 			return 1
@@ -53,13 +53,13 @@ func AddFriends(user1_id int, user2_id int) int {
 		}
 	} else {
 		for _, v := range values {
-			if v["Accepted"].(int8) == 0 {
+			if v["Accepted"] == false {
 				// 对面有申请加好友，同意~
-				friends := Friends{User1Id: user2, User2Id: user1, Accepted: 1}
+				friends := Friends{User1Id: user2, User2Id: user1, Accepted: true}
 				o.Update(&friends) // TODO:: 这里是否应该加入容错？
 
 				// 加入本人加对面的好友
-				friends1 := Friends{User1Id: user1, User2Id: user2, Accepted: 1}
+				friends1 := Friends{User1Id: user1, User2Id: user2, Accepted: true}
 				_, err := o.Insert(&friends1)
 				if err == nil {
 					return 1
@@ -86,7 +86,7 @@ func GetFriends(id int, limit int64, offset int64) []Friends {
 	qs := o.QueryTable(new(Friends))
 	cond := orm.NewCondition()
 	cond = cond.Or("User1Id", user)  //.Or("User2Id", user)
-	qs.SetCond(cond).Filter("Accepted", 1).All(friends)
+	qs.SetCond(cond).Filter("Accepted", true).All(friends)
 	return friends
 }
 
@@ -99,7 +99,7 @@ func GetFriendsRequest(id int, limit int64, offset int64) []Friends {
 	}
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Friends))
-	qs.Filter("User2Id", user).Filter("Accepted", 0).All(friends)
+	qs.Filter("User2Id", user).Filter("Accepted", false).All(friends)
 	return friends
 }
 
@@ -113,9 +113,9 @@ func DeleteFriends(user1_id int, user2_id int) error {
 		return errors.New("invalid user id")
 	}
 	o := orm.NewOrm()
-	friends := Friends{User1Id: user1, User2Id: user2, Accepted: 1} //TODO::待测试 直觉上不用写这么详细。。
+	friends := Friends{User1Id: user1, User2Id: user2, Accepted: true} //TODO::待测试 直觉上不用写这么详细。。
 	num1, _ := o.Delete(&friends)
-	friends = Friends{User1Id: user2, User2Id: user1, Accepted: 1}
+	friends = Friends{User1Id: user2, User2Id: user1, Accepted: true}
 	num2, _ := o.Delete(&friends)
 	if num1 == 0 && num2 == 0 {
 		return errors.New("these two users are not friends")
