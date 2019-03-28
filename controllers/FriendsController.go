@@ -6,6 +6,8 @@ import (
 	"github.com/bitly/go-simplejson"
 
 	"github.com/astaxie/beego"
+
+	"fmt"
 )
 
 type FriendsController struct {
@@ -27,6 +29,7 @@ func (this *FriendsController) Get() {
 		offset = 0
 	}
 	method := this.GetString("method")
+	// fmt.Println(method)
 	var friends []models.Friends
 	if method == "" {
 		this.Abort("must have a method")
@@ -34,6 +37,8 @@ func (this *FriendsController) Get() {
 		friends = models.GetFriends(id, limit, offset)
 	} else if method == "request" {
 		friends = models.GetFriendsRequest(id, limit, offset)
+	} else{
+		fmt.Println("WTF!")
 	}
 	bodyJSON := simplejson.New()
 	bodyJSON.Set("status", "success")

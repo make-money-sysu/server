@@ -32,10 +32,11 @@ create table do_survey
 );
 create table friends
 (
+	fid	int unsigned not null auto_increment primary key,
 	user1_id int unsigned not null,
 	user2_id int unsigned not null,
 	accepted boolean not null,
-	primary key(user1_id,user2_id),
+	-- primary key(user1_id,user2_id),
 	foreign key(user1_id) references user(id),
 	foreign key(user2_id) references user(id)
 );
