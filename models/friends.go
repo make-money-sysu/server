@@ -2,12 +2,12 @@ package models
 
 import (
 	"errors"
-
+	"fmt"
 	"github.com/astaxie/beego/orm"
 )
 
 type Friends struct {
-	Fid			int		`orm:"column(fid);pk"`
+	Fid			int64		`orm:"column(fid);pk"`
 	User1Id  	*User 	`orm:"column(user1_id);rel(fk)"`
 	User2Id  	*User 	`orm:"column(user2_id);rel(fk)"`
 	Accepted 	bool  	`orm:"column(accepted)"`
@@ -53,10 +53,17 @@ func AddFriends(user1_id int, user2_id int) int {
 		}
 	} else {
 		for _, v := range values {
+			fmt.Println(v)
 			if v["Accepted"] == false {
 				// 对面有申请加好友，同意~
-				friends := Friends{User1Id: user2, User2Id: user1, Accepted: true}
-				o.Update(&friends) // TODO:: 这里是否应该加入容错？
+				var tid int64
+				tid = v["Fid"].(int64)
+				friends := Friends{Fid: tid, User1Id: user2, User2Id: user1,Accepted: true}
+				// v["Accepted"] = true
+				if num, err :=o.Update(&friends); err != nil {
+					fmt.Println(num)
+					return 0
+				} // TODO:: 这里是否应该加入容错？
 
 				// 加入本人加对面的好友
 				friends1 := Friends{User1Id: user1, User2Id: user2, Accepted: true}
@@ -77,16 +84,18 @@ func AddFriends(user1_id int, user2_id int) int {
 
 //获得好友列表
 func GetFriends(id int, limit int64, offset int64) []Friends {
+	fmt.Println("WTF?")
 	var friends []Friends
-	user, err := GetUserById(id)
-	if err != nil {
-		return friends
-	}
+	// user, err := GetUserById(id)
+	// if err != nil {
+	// 	return friends
+	// }
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Friends))
 	cond := orm.NewCondition()
-	cond = cond.Or("User1Id", user)  //.Or("User2Id", user)
-	qs.SetCond(cond).Filter("Accepted", true).All(friends)
+	cond = cond.Or("User1Id", id) //.Or("User2Id", id)
+	qs.SetCond(cond).Filter("Accepted", true).All(&friends)
+	// fmt.Println(friends)
 	return friends
 }
 
@@ -99,25 +108,41 @@ func GetFriendsRequest(id int, limit int64, offset int64) []Friends {
 	}
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Friends))
-	qs.Filter("User2Id", user).Filter("Accepted", false).All(friends)
+	qs.Filter("User2Id", user).Filter("Accepted", false).All(&friends)
 	return friends
 }
 
 func DeleteFriends(user1_id int, user2_id int) error {
-	user1, err := GetUserById(user1_id)
+	_, err := GetUserById(user1_id)
 	if err != nil {
 		return errors.New("invalid user id")
 	}
-	user2, err := GetUserById(user2_id)
-	if err != nil {
+
+	_, err2 := GetUserById(user2_id)
+	if err != nil || err2 != nil {
 		return errors.New("invalid user id")
 	}
+	
 	o := orm.NewOrm()
-	friends := Friends{User1Id: user1, User2Id: user2, Accepted: true} //TODO::待测试 直觉上不用写这么详细。。
-	num1, _ := o.Delete(&friends)
-	friends = Friends{User1Id: user2, User2Id: user1, Accepted: true}
-	num2, _ := o.Delete(&friends)
+	
+	var friends Friends
+	qs := o.QueryTable(new(Friends))
+	cond := orm.NewCondition()
+	cond = cond.And("User1Id", user1_id).And("User2Id", user2_id)
+	qs.SetCond(cond).Filter("Accepted", 1).One(&friends)
+	num1, err1 := o.Delete(&friends)
+
+	var friends2 Friends
+	qs2 := o.QueryTable(new(Friends))
+	cond2 := orm.NewCondition()
+	cond2 = cond2.And("User1Id", user2_id).And("User2Id", user1_id)
+	qs2.SetCond(cond2).Filter("Accepted", true).One(&friends2)
+	num2, err2 := o.Delete(&friends2)
+	fmt.Println(err1)
+	fmt.Println(err2)
 	if num1 == 0 && num2 == 0 {
+		fmt.Println(err1)
+		fmt.Println(err2)
 		return errors.New("these two users are not friends")
 	}
 	return nil
