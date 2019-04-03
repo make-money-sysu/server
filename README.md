@@ -1,50 +1,24 @@
-### 关于运行
+<p align="center">
+<img src="https://ws1.sinaimg.cn/large/006tKfTcly1g1p7ya6ib9j31hm0u0who.jpg" alt="ScoreChain" title="ScoreChain" length = "1400" width="500"/><br/>
+</p>
+<p align="center">
+<a href="https://make-money-sysu.github.io/"><img src="https://img.shields.io/badge/club-M%24%20-red.svg"></a>
+<a href="https://github.com/make-money-sysu"><img src="https://img.shields.io/badge/coverage-A-%2300ccee.svg"></a>
+<a href="https://logojoy.com/"><img src="https://img.shields.io/badge/logo-logojoy-FFD700.svg"></a>
+<a href="https://github.com/make-money-sysu"><img src="https://img.shields.io/appveyor/ci/gruntjs/grunt.svg"></a><br/>
+<a href="https://github.com/make-money-sysu"><img src="https://img.shields.io/badge/platform-Win 10-388E8E.svg"></a>
+<a href="https://github.com/make-money-sysu"><img src="https://img.shields.io/badge/copyright-M$ Club-blue.svg"></a>
+<a href="https://github.com/make-money-sysu"><img src="https://img.shields.io/badge/date-3~7, 2019-66a033.svg"></a>
+<a href="https://996.icu"><img src="https://img.shields.io/badge/link-996.icu-8855dd.svg" alt="996.icu"></a>
+<br/><br/>
+</p>
 
-当然先安装go
+We, **[M$ Club](https://github.com/make-money-sysu)**, are aiming to construct a cloud platform for college students to earn pocket money by doing simple tasks. 
 
-然后增加包beego（warning：切莫反着读）。
+**Make-Money project** is an operation-oriented service software and it's also a professional "crowdsourcing" system for college students. In our system, `Cloud Service Center` provides constantly improving business. Each student has the privilege to own a `M$ Client`. Some `Agencies`, called cows, arrange platforms for their tasks. Basic business includes assigning requirements and offering salaries by system, obtaining the extra money and using money to release the task or withdraw cash by clients. Our system does not support free transactions for the moment.
 
-> go get github.com/astaxie/beego
->
-> 反正缺的都go get 就好了。
->
-> 然后会说找不到routers，虽然路径上显然是可以找到的。但是他就是不行。因为这就是个[bug](<https://github.com/astaxie/beego/issues/810>)把他放在go的安装目录里面的src之中就好了。
->
-> 然后就是新的报错
->
-> > non-standard import "github.com/astaxie/beego" in standard package
-> >
-> > 贼刺激。
-> >
-> > 忽然发现他500+个问题未解决，感觉头皮发麻。
->
-> 原来是位置不对。应该是要放在项目目录之下，GOPATH下面而不是GOROOT下。再挪一下就好了。继续go get然后就能go build main.go出来一个exe，运行他就能够打开了。
->
-> （当然现在的项目还有bug而没成功，不影响我继续~
+<p align="center">
+<img src="https://ws2.sinaimg.cn/bmiddle/006tKfTcgy1g11alobgjij318n0u0gq9.jpg" alt="ScoreChain" title="ScoreChain" length = "1400" width="500"/><br/>
+</p>
 
-
-
-## 关于friends功能的修改
-
-目前的功能需求是实现 好友关系的添加和删除功能。本来的设计是使用两个user的id联合作为联合主键来建立表格然后用一个bool值来标记他们之间的关系（是否已经接受，没有记录就表示还没有发出申请）。据刘恒伟描述是，orm不支持联合主键，那样的话直接不用联合主键就好了。（另外的话，现在是一个带方向的映射关系，接受之后应该要注意一下把另一个方向的关掉，之类的操作。。直觉上，应该是会有一个一对一的意思的表格而不用user1，user2这样来搞，但是没找到，先这样用着，增删的时候留一下就好）。增加一个自增字段fid，表示两者之间的关系映射id。
-
-
-
-----
-
-添加个主键，然后跑起来了~
-
-但是这个接口不是很清楚，但是看着[这里](<https://beego.me/docs/mvc/model/query.md>)修改，感觉还行。预计明天晚上能改完。
-
-TODO::
-
-1. 修改model.friends里面的查改内容 x
-2. 留意增删的时候反方向的处理，现在部分逻辑没考虑双向关系的样子 x
-3. 因为这里被引用的关系，对于外面的controller和router，应该是不需要什么修改的。 x
-
-测试中~
-这个api的文档需要更新，有毒~~
-坑边记录：
-1. sql的boolean不能被强行转成int8来比较，不然是不行的。要用bool
-2. 删除过的friend不能再次删除
-3. “和’是不一样的，出bug可以先考虑一下这个有没有出问题。。
+**Make-Money System** is the integration of many complex systems, including student management system, task management system, transaction management system, account management system, etc. The difficulty of our system lies in operation, that is, the discovery and delivery of tasks (business).
