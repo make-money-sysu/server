@@ -38,6 +38,9 @@ func (this *UserController) Put() {
 	var user models.User
 	bodyJSON := simplejson.New()
 	if err := json.Unmarshal(this.Ctx.Input.RequestBody, &user); err == nil {
+		if user.Id != this.GetSession("id").(int) {
+			this.Abort("Login expired")
+		}
 		err = models.UpdateUserById(&user)
 		if err == nil {
 			bodyJSON.Set("status", "success")
@@ -57,6 +60,9 @@ func (this *UserController) Delete() {
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if err == nil {
+		if id != this.GetSession("id").(int) {
+			this.Abort("Login expired")
+		}
 		err = models.DeleteUser(id)
 	}
 	if err == nil {

@@ -21,6 +21,7 @@ func (this *LoginController) Post() {
 		bodyJSON := simplejson.New()
 		if success {
 			bodyJSON.Set("status", "success")
+			this.SetSession("id", id)
 		} else {
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "id and password doesn't match")

@@ -64,7 +64,11 @@ func (this *SurveyController) Post() {
 	var survey models.Survey
 	inputJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
 	if err == nil {
-		survey.PublisherId, _ = models.GetUserById(inputJSON.Get("publisher_id").MustInt())
+		publisher_id := inputJSON.Get("publisher_id").MustInt()
+		if publisher_id != this.GetSession("id").(int) {
+			this.Abort("Login expired")
+		}
+		survey.PublisherId, _ = models.GetUserById(publisher_id)
 		survey.Name = inputJSON.Get("name").MustString()
 		survey.Content = inputJSON.Get("content").MustString()
 		if id, err := models.AddSurvey(&survey); err == nil {
@@ -88,6 +92,10 @@ func (this *SurveyController) Put() {
 	if err == nil {
 		var survey models.Survey
 		inputJSON, _ := simplejson.NewJson(this.Ctx.Input.RequestBody)
+		publisher_id := inputJSON.Get("publisher_id").MustInt()
+		if publisher_id != this.GetSession("id").(int) {
+			this.Abort("Login expired")
+		}
 		survey.PublisherId, _ = models.GetUserById(inputJSON.Get("publisher_id").MustInt())
 		survey.Name = inputJSON.Get("name").MustString()
 		survey.Content = inputJSON.Get("content").MustString()
@@ -108,6 +116,10 @@ func (this *SurveyController) Delete() {
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if err == nil {
+		to_delete, _ := models.GetSurveyById(id)
+		if to_delete.PublisherId.Id != this.GetSession("id").(int) {
+			this.Abort("Login expired")
+		}
 		err = models.DeleteSurvey(id)
 		if err == nil {
 			bodyJSON.Set("status", "success")

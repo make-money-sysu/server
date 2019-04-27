@@ -17,6 +17,9 @@ type FriendsController struct {
 //查询一个用户的好友列表
 func (this *FriendsController) Get() {
 	id, err := this.GetInt("id")
+	if this.GetSession("id").(int) != id {
+		this.Abort("Login expired")
+	}
 	if err != nil {
 		this.Abort("invalid id")
 	}
@@ -37,7 +40,7 @@ func (this *FriendsController) Get() {
 		friends = models.GetFriends(id, limit, offset)
 	} else if method == "request" {
 		friends = models.GetFriendsRequest(id, limit, offset)
-	} else{
+	} else {
 		fmt.Println("WTF!")
 	}
 	bodyJSON := simplejson.New()
@@ -79,6 +82,9 @@ func (this *FriendsController) Get() {
 
 func (this *FriendsController) Post() {
 	user1_id, err := this.GetInt("user1_id")
+	if this.GetSession("id").(int) != user1_id {
+		this.Abort("Login expired")
+	}
 	if err != nil {
 		this.Abort("invalid user1 id")
 	}
@@ -103,6 +109,9 @@ func (this *FriendsController) Post() {
 
 func (this *FriendsController) Delete() {
 	user1_id, err := this.GetInt("user1_id")
+	if this.GetSession("id").(int) != user1_id {
+		this.Abort("Login expired")
+	}
 	if err != nil {
 		this.Abort("invalid user1 id")
 	}

@@ -22,3 +22,8 @@ We, **[M$ Club](https://github.com/make-money-sysu)**, are aiming to construct a
 </p>
 
 **Make-Money System** is the integration of many complex systems, including student management system, task management system, transaction management system, account management system, etc. The difficulty of our system lies in operation, that is, the discovery and delivery of tasks (business).
+
+
+### 更新日志
+#### 2019-4-27 添加了cookie认证
+在登录后会在本地存储cookie，里面存储了sessionid，在每次进行只有本用户才可以进行的操作，如进行查询好友，通过好友，创建问卷等操作时，会自动验证是否是本用户登录后所为，若验证失败api会返回Login expired

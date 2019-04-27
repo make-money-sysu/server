@@ -3,14 +3,15 @@ package models
 import (
 	"errors"
 	"fmt"
+
 	"github.com/astaxie/beego/orm"
 )
 
 type Friends struct {
-	Fid			int64		`orm:"column(fid);pk"`
-	User1Id  	*User 	`orm:"column(user1_id);rel(fk)"`
-	User2Id  	*User 	`orm:"column(user2_id);rel(fk)"`
-	Accepted 	bool  	`orm:"column(accepted)"`
+	Fid      int64 `orm:"column(fid);pk"`
+	User1Id  *User `orm:"column(user1_id);rel(fk)"`
+	User2Id  *User `orm:"column(user2_id);rel(fk)"`
+	Accepted bool  `orm:"column(accepted)"`
 }
 
 func (f *Friends) TableName() string {
@@ -58,9 +59,9 @@ func AddFriends(user1_id int, user2_id int) int {
 				// 对面有申请加好友，同意~
 				var tid int64
 				tid = v["Fid"].(int64)
-				friends := Friends{Fid: tid, User1Id: user2, User2Id: user1,Accepted: true}
+				friends := Friends{Fid: tid, User1Id: user2, User2Id: user1, Accepted: true}
 				// v["Accepted"] = true
-				if num, err :=o.Update(&friends); err != nil {
+				if num, err := o.Update(&friends); err != nil {
 					fmt.Println(num)
 					return 0
 				} // TODO:: 这里是否应该加入容错？
@@ -122,9 +123,9 @@ func DeleteFriends(user1_id int, user2_id int) error {
 	if err != nil || err2 != nil {
 		return errors.New("invalid user id")
 	}
-	
+
 	o := orm.NewOrm()
-	
+
 	var friends Friends
 	qs := o.QueryTable(new(Friends))
 	cond := orm.NewCondition()
