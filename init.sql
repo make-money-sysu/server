@@ -40,3 +40,17 @@ create table friends
 	foreign key(user1_id) references user(id),
 	foreign key(user2_id) references user(id)
 );
+
+create table package
+(
+	id int unsigned not null auto_increment primary key,
+	owner_id int unsigned not null,
+	receiver_id int unsigned not null,
+	create_time datetime,
+	reward float not null,
+	-- 0为刚发布，1为已被接单，2为确认送达
+	state int unsigned default 0,
+	note varchar(200) default "",
+	foreign key(owner_id) references user(id),
+	foreign key(receiver_id) references user(id)
+)
