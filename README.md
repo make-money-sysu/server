@@ -27,3 +27,6 @@ We, **[M$ Club](https://github.com/make-money-sysu)**, are aiming to construct a
 ### 更新日志
 #### 2019-4-27 添加了cookie认证
 在登录后会在本地存储cookie，里面存储了sessionid，在每次进行只有本用户才可以进行的操作，如进行查询好友，通过好友，创建问卷等操作时，会自动验证是否是本用户登录后所为，若验证失败api会返回Login expired
+
+#### 2019-5-13 添加了快递相关接口
+详情请看api.md，数据库结构参考init.sql

@@ -148,3 +148,40 @@ DELETE为删除好友，同样需要提供user1_id和user2_id，删除成功，�
 	"msg" : "报错信息"
 }
 ```
+## /package
+package为快递相关api，支持GET，PUT和POST请求
+GET为获取快递列表，在参数列表里可以提供id(快递的)，owner_id，receiver_id，state，offset，limit，返回格式如下:
+```
+{
+	“status" : "success",
+	"data" : 查询出的快递列表，字段名同数据库
+}
+```
+
+POST为上传快递单，在boby中提供快递的owner_id(所有者)，reward，note即可，其他字段需要存在，但是值无所谓，不然可能会出现不可预知的错误，如果目前登录用户和owner_id不符会LOgin expired，成功则返回：
+```
+{
+	"status" : "success"
+}
+```
+失败则返回：
+```
+{
+	"status" : "failed",
+	"msg" : "报错信息"
+}
+```
+
+PUT为接单和确认收货功能，在参数列表中必须提供method，method为receive则为接单，confirm则为确认收货，如果method为receive，就必须同时提供receiver_id，并且receiver_id必须是当前登录用户，成功则返回：
+```
+{
+	"status" : "success"
+}
+```
+失败则返回：
+```
+{
+	"status" : "failed",
+	"msg" : "报错信息"
+}
+```

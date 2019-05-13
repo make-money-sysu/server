@@ -45,7 +45,7 @@ create table package
 (
 	id int unsigned not null auto_increment primary key,
 	owner_id int unsigned not null,
-	receiver_id int unsigned not null,
+	receiver_id int unsigned,
 	create_time datetime,
 	reward float not null,
 	-- 0为刚发布，1为已被接单，2为确认送达
