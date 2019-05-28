@@ -28,6 +28,25 @@ POST的body为如下格式的json:
 此地址用来对用户表进行修改
 符合RESTful设计支持GET,POST,PUT和DELETE
 GET为获取用户信息，必须提供id(方式如上)：
+
+输入body：raw
+```
+{
+	"id" : 16340132,
+	"password" : "dick20",
+	"real_name" : "dick",
+	"nick_name" : "dick",
+	"age" : 18,
+	"gender" : "1",
+	"head_picture" : " blob not null1",
+	"balance" : 100000,
+	"profession" : "1",
+	"grade" : "3",
+	"phone" : "13680473185",
+	"email" : "dic0k@qq.com"
+}
+```
+
 返回为json格式，除了密码外此用户的所有信息都会返回，字段名同数据库中列名(见init.sql)
 POST即为注册功能，http包body体中提供json，字段名同数据库即可，如果注册成功，则返回json:
 ```
