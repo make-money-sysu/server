@@ -14,6 +14,8 @@ type SurveyController struct {
 }
 
 func (this *SurveyController) Get() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	
 	id := this.GetString("id")
 	publisherId := this.GetString("publisher_id")
 	name := this.GetString("name")

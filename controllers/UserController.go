@@ -76,6 +76,8 @@ func (this *UserController) Delete() {
 }
 
 func (this *UserController) Get() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if err == nil {
