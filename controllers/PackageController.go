@@ -14,6 +14,7 @@ type PackageController struct {
 }
 
 func (this *PackageController) Post() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	var thisPackage models.Package
 	packageJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
 	if err != nil {
@@ -48,6 +49,7 @@ func (this *PackageController) Post() {
 }
 
 func (this *PackageController) Put() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	id, err := this.GetInt("id")
 	if err != nil {
 		this.Abort("invalid id")
@@ -87,6 +89,7 @@ func (this *PackageController) Put() {
 }
 
 func (this *PackageController) Get() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	id, err := this.GetInt("id")
 	if err != nil {
 		id = 0

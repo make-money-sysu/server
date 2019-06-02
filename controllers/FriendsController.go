@@ -16,6 +16,7 @@ type FriendsController struct {
 
 //查询一个用户的好友列表
 func (this *FriendsController) Get() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	id, err := this.GetInt("id")
 	if this.GetSession("id").(int) != id {
 		this.Abort("Login expired")
@@ -81,6 +82,7 @@ func (this *FriendsController) Get() {
 }
 
 func (this *FriendsController) Post() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	user1_id, err := this.GetInt("user1_id")
 	if this.GetSession("id").(int) != user1_id {
 		this.Abort("Login expired")
@@ -108,6 +110,7 @@ func (this *FriendsController) Post() {
 }
 
 func (this *FriendsController) Delete() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	user1_id, err := this.GetInt("user1_id")
 	if this.GetSession("id").(int) != user1_id {
 		this.Abort("Login expired")
