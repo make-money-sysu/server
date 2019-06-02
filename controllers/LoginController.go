@@ -22,6 +22,7 @@ func (this *LoginController) Post() {
 		bodyJSON := simplejson.New()
 		if success {
 			bodyJSON.Set("status", "success")
+			bodyJSON.Set("msg", "success")
 			this.SetSession("id", id)
 		} else {
 			bodyJSON.Set("status", "failed")

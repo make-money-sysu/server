@@ -30,3 +30,6 @@ We, **[M$ Club](https://github.com/make-money-sysu)**, are aiming to construct a
 
 #### 2019-5-13 添加了快递相关接口
 详情请看api.md，数据库结构参考init.sql
+
+#### 2019-6-2 解决跨域
+解决跨域问题
