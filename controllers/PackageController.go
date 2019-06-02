@@ -6,7 +6,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/bitly/go-simplejson"
-	"fmt"
+	// "fmt"
 )
 
 // PackageController operations for Package
@@ -112,7 +112,6 @@ func (this *PackageController) Get() {
 	// this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	
 	id, err := this.GetInt("id")
-	fmt.Println(id)
 	if err != nil {
 		id = 0
 	}
@@ -143,8 +142,13 @@ func (this *PackageController) Get() {
 	for i, p := range packages {
 		tmpMap := make(map[string]interface{})
 		tmpMap["id"] = p.Id
+		// fmt.Println(p.ReceiverId)
 		tmpMap["owner_id"] = p.OwnerId.Id
-		tmpMap["receiver_id"] = p.ReceiverId.Id
+		if p.ReceiverId == nil {
+			tmpMap["receiver_id"] = "none"
+		}else{
+			tmpMap["receiver_id"] = p.ReceiverId.Id
+		}
 		tmpMap["create_time"] = p.CreateTime.String()
 		tmpMap["reward"] = p.Reward
 		tmpMap["state"] = p.State
