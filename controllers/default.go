@@ -23,4 +23,6 @@ func (c *MainController) AllowCross() {
   c.Ctx.ResponseWriter.Header().Set("Access-Control-Max-Age", "1728000")
   c.Ctx.ResponseWriter.Header().Set("Access-Control-Allow-Credentials", "true")
   c.Ctx.ResponseWriter.Header().Set("content-type", "application/json") //返回数据格式是json
+  
+	c.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 }
