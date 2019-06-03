@@ -185,15 +185,21 @@ DELETE为删除好友，同样需要提供user1_id和user2_id，删除成功，�
 
 包裹信息包含以下字段：
 
-| 字段        | 类型   | 备注                                |
-| ----------- | ------ | ----------------------------------- |
-| id          | int    |                                     |
-| owner_id    | int    |                                     |
-| receiver_id | int    |                                     |
-| create_time | string |                                     |
-| reward      | int    |                                     |
-| state       | int    | 0为刚发布，1为已被接单，2为确认送达 |
-| note        | string |                                     |
+| 字段               | 类型   | 备注                                |
+| ------------------ | ------ | ----------------------------------- |
+| id                 | int    |                                     |
+| owner_id           | int    |                                     |
+| owner_real_name    | string |                                     |
+| owner_nick_name    | string |                                     |
+| owner_Phone        | string |                                     |
+| receiver_id        | int    |                                     |
+| receiver_real_name | string |                                     |
+| receiver_nick_name | string |                                     |
+| receiver_Phone     | string |                                     |
+| create_time        | string |                                     |
+| reward             | int    |                                     |
+| state              | int    | 0为刚发布，1为已被接单，2为确认送达 |
+| note               | string |                                     |
 
 
 
