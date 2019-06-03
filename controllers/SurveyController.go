@@ -14,6 +14,8 @@ type SurveyController struct {
 }
 
 func (this *SurveyController) Get() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	
 	id := this.GetString("id")
 	publisherId := this.GetString("publisher_id")
 	name := this.GetString("name")
@@ -60,6 +62,7 @@ func (this *SurveyController) Get() {
 }
 
 func (this *SurveyController) Post() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	bodyJSON := simplejson.New()
 	var survey models.Survey
 	inputJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
@@ -87,6 +90,7 @@ func (this *SurveyController) Post() {
 }
 
 func (this *SurveyController) Put() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if err == nil {
@@ -113,6 +117,7 @@ func (this *SurveyController) Put() {
 }
 
 func (this *SurveyController) Delete() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if err == nil {

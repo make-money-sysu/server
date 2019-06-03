@@ -6,6 +6,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/bitly/go-simplejson"
+	"fmt"
 )
 
 // PackageController operations for Package
@@ -14,40 +15,49 @@ type PackageController struct {
 }
 
 func (this *PackageController) Post() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	bodyJSON := simplejson.New()
 	var thisPackage models.Package
 	packageJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
 	if err != nil {
-		this.Abort("invalid json format")
-	}
-	thisPackage.OwnerId, err = models.GetUserById(packageJSON.Get("owner_id").MustInt())
-	if thisPackage.OwnerId.Id != this.GetSession("id").(int) {
-		this.Abort("Login expired")
-	}
-	thisPackage.CreateTime = time.Now()
-	thisPackage.Reward = float32(packageJSON.Get("reward").MustFloat64())
-	thisPackage.State = 0
-	thisPackage.Note = packageJSON.Get("note").MustString()
-	if thisPackage.OwnerId.Balance < thisPackage.Reward {
-		this.Abort("user balance doesn't enough")
-	}
-	bodyJSON := simplejson.New()
-	if err == nil {
-		_, err := models.AddPackage(&thisPackage)
+		//校验格式
+		bodyJSON.Set("status", "failed")
+		bodyJSON.Set("msg", "invalid json format")
+	}else if this.GetSession("id") == nil {
+		// 检查session
+		bodyJSON.Set("status", "failed")
+		bodyJSON.Set("msg", "Login expired")
+	}else{
+		thisPackage.OwnerId, err = models.GetUserById(this.GetSession("id").(int))
+		
+		thisPackage.CreateTime = time.Now()
+		thisPackage.Reward = float32(packageJSON.Get("reward").MustFloat64())
+		thisPackage.State = 0
+		thisPackage.Note = packageJSON.Get("note").MustString()
+		if thisPackage.OwnerId.Balance < thisPackage.Reward {
+			this.Abort("user balance doesn't enough")
+		}
 		if err == nil {
-			bodyJSON.Set("status", "success")
+			_, err := models.AddPackage(&thisPackage)
+			if err == nil {
+				bodyJSON.Set("status", "success")
+				bodyJSON.Set("msg", "post success")
+			} else {
+				bodyJSON.Set("status", "failed")
+				bodyJSON.Set("msg", "create the pakage error, please contact with us")
+			}
 		} else {
 			bodyJSON.Set("status", "failed")
-			bodyJSON.Set("msg", err.Error())
+			bodyJSON.Set("msg", "this user doesn't not exist")
 		}
-	} else {
-		bodyJSON.Set("status", "failed")
-		bodyJSON.Set("msg", "this user doesn't not exist")
 	}
+	
 	body, _ := bodyJSON.Encode()
 	this.Ctx.Output.Body(body)
 }
 
 func (this *PackageController) Put() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	id, err := this.GetInt("id")
 	if err != nil {
 		this.Abort("invalid id")
@@ -56,37 +66,51 @@ func (this *PackageController) Put() {
 	bodyJSON := simplejson.New()
 	//接单
 	if method == "receive" {
-		receiver_id, _ := this.GetInt("receiver_id")
-		if this.GetSession("id").(int) != receiver_id {
-			this.Abort("Login expired")
-		}
-		err = models.ReceivePackage(id, receiver_id)
-		if err != nil {
+		// this.GetSession("id").(int)
+		if this.GetSession("id") == nil {
 			bodyJSON.Set("status", "failed")
-			bodyJSON.Set("msg", "the package or the user doesn't exist")
-		} else {
-			bodyJSON.Set("status", "success")
+			bodyJSON.Set("msg", "Login expired")
+		}else{
+			err = models.ReceivePackage(id, this.GetSession("id").(int))
+			if err != nil {
+				bodyJSON.Set("status", "failed")
+				bodyJSON.Set("msg", "the package or the user doesn't exist")
+			} else {
+				bodyJSON.Set("status", "success")
+				bodyJSON.Set("msg", "you have recived it")
+			}
 		}
 	} else if method == "confirm" {
-		thisPackage, _ := models.GetPackageById(id)
-		if this.GetSession("id").(int) != thisPackage.OwnerId.Id {
-			this.Abort("Login expired")
-		}
-		err = models.ConfirmPackage(id)
-		if err != nil {
+		if this.GetSession("id") == nil {
 			bodyJSON.Set("status", "failed")
-			bodyJSON.Set("msg", err.Error())
-		} else {
-			bodyJSON.Set("status", "success")
+			bodyJSON.Set("msg", "Login expired")
+		}else{
+			thisPackage, _ := models.GetPackageById(id)
+			if this.GetSession("id") == nil || thisPackage.OwnerId.Id != this.GetSession("id") {
+				bodyJSON.Set("status", "failed")
+				bodyJSON.Set("msg", "Login expired")
+			}else{
+				err = models.ConfirmPackage(id)
+				if err != nil {
+					bodyJSON.Set("status", "failed")
+					bodyJSON.Set("msg", "create the pakage error, please contact with us")
+				} else {
+					bodyJSON.Set("status", "success")
+					bodyJSON.Set("msg", "confirmed")
+				}
+			}
 		}
 	} else {
-		this.Abort("invalid method")
+		bodyJSON.Set("status", "failed")
+		bodyJSON.Set("msg", "found no method")
 	}
 	body, _ := bodyJSON.Encode()
 	this.Ctx.Output.Body(body)
 }
 
 func (this *PackageController) Get() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	
 	id, err := this.GetInt("id")
 	if err != nil {
 		id = 0
@@ -118,8 +142,40 @@ func (this *PackageController) Get() {
 	for i, p := range packages {
 		tmpMap := make(map[string]interface{})
 		tmpMap["id"] = p.Id
+		fmt.Println(p.ReceiverId)
 		tmpMap["owner_id"] = p.OwnerId.Id
-		tmpMap["receiver_id"] = p.ReceiverId.Id
+		owner, err :=models.GetUserById(p.OwnerId.Id)
+		if err != nil {
+			tmpMap["owner_real_name"]=owner.RealName
+			tmpMap["owner_nick_name"]=owner.NickName
+			tmpMap["owner_Phone"]=owner.Phone
+		}else{
+			tmpMap["owner_real_name"]="none"
+			tmpMap["owner_nick_name"]="none"
+			tmpMap["owner_Phone"]="none"
+		}
+
+
+
+		if p.ReceiverId == nil {
+			tmpMap["receiver_id"] = "none"
+			tmpMap["owner_real_name"]="none"
+			tmpMap["owner_nick_name"]="none"
+			tmpMap["owner_Phone"]="none"
+		}else{
+			tmpMap["receiver_id"] = p.ReceiverId.Id
+			receiver, err :=models.GetUserById(p.ReceiverId.Id)
+			if err != nil {
+				tmpMap["receiver_real_name"]=receiver.RealName
+				tmpMap["receiver_nick_name"]=receiver.NickName
+				tmpMap["receiver_Phone"]=receiver.Phone
+			}else{
+				tmpMap["receiver_real_name"]="none"
+				tmpMap["receiver_nick_name"]="none"
+				tmpMap["receiver_Phone"]="none"
+			}
+		}
+		
 		tmpMap["create_time"] = p.CreateTime.String()
 		tmpMap["reward"] = p.Reward
 		tmpMap["state"] = p.State

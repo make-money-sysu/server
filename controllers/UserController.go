@@ -15,6 +15,7 @@ type UserController struct {
 }
 
 func (this *UserController) Post() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	var user models.User
 	bodyJSON := simplejson.New()
 	if err := json.Unmarshal(this.Ctx.Input.RequestBody, &user); err == nil {
@@ -35,6 +36,7 @@ func (this *UserController) Post() {
 }
 
 func (this *UserController) Put() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	var user models.User
 	bodyJSON := simplejson.New()
 	if err := json.Unmarshal(this.Ctx.Input.RequestBody, &user); err == nil {
@@ -57,6 +59,7 @@ func (this *UserController) Put() {
 }
 
 func (this *UserController) Delete() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if err == nil {
@@ -76,6 +79,8 @@ func (this *UserController) Delete() {
 }
 
 func (this *UserController) Get() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if err == nil {
