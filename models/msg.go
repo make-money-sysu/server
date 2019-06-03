@@ -80,7 +80,7 @@ func GetHistory(fromid int, toid int, limit int, offset int) (readData []Msg, er
 	}
 	cond = cond.Or("Fromid", user)
 	cond = cond.Or("Toid", user)
-	
-	qs.SetCond(cond).All(&readData)
+
+	qs.SetCond(cond).Limit(limit).Offset(offset).All(&readData)
 	return readData, err
 }
