@@ -33,3 +33,6 @@ We, **[M$ Club](https://github.com/make-money-sysu)**, are aiming to construct a
 
 #### 2019-6-2 解决跨域&&bug修正
 解决跨域问题， 修正friend，package部分，补充相关api文档。乐观测试两个部分的api。
+
+#### 2019-6-3 增加pakage返回信息
+根据文档，pakage的返回值添加前端需要的一些信息

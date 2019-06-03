@@ -51,6 +51,14 @@ POST即为注册功能，http包body体中提供json，字段名同数据库即�
 PUT为修改用户信息功能，使用方法和POST类似，返回同上
 
 ## 4./survey/?:id
+|      |      |      |
+| ---- | ---- | ---- |
+|      |      |      |
+|      |      |      |
+|      |      |      |
+
+
+
 此地址为对survey进行操作，同样符合RESTful规范用GET,POST,PUT,DELETE来实现增删改查
 GET为获取问卷列表，注意这里支持对问卷id,发布者id,问卷名称进行筛选，而且支持设置offset和limit,注意不要用survey/123这种方式来进行id的筛选，所有的筛选字段统一为GET请求地址的参数，比如/survey?id=1&publisher_id=1&name=aaa&name=1&offset=1，如果不设置limit，默认返回所有，不设置offset默认为0
 如果查询成功，则返回json:
