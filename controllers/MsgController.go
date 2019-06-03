@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	// "fmt"
+	"fmt"
 	"server/models"
 	"time"
 
@@ -10,33 +10,42 @@ import (
 )
 
 // PackageController operations for Package
-type msgController struct {
+type MsgController struct {
 	beego.Controller
 }
 
 // 发送信息
-func (this *msgController) Post() {
+func (this *MsgController) Post() {
 	var msg models.Msg
 	bodyJSON := simplejson.New()
 	if inputJson, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
-		if nil != this.GetSession("id") {
+		if nil == this.GetSession("id") {
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
 		}else{
-			msg.Fromid = this.GetSession("id").(int)
-			msg.Toid = inputJson.Get("to").MustInt()
-			msg.Content = inputJson.Get("msg").MustString()
-			msg.Createtime = time.Now()
-			msg.State = 10
-			// 0为系统消息 ，10为未查看，11为已查看，但未知悉，12为已查看，已知悉，13为已撤回
-		
-			result, err := models.SendMessage(&msg)
-			if err == nil {
-				bodyJSON.Set("status", "success")
-				bodyJSON.Set("msg", result)
-			} else {
+			var err1 error
+			var err2 error
+			err1 = nil
+			err2 = nil
+			msg.Fromid,err1 = models.GetUserById(this.GetSession("id").(int))
+			msg.Toid,err2 = models.GetUserById(inputJson.Get("to").MustInt())
+			if err1 == nil || err2 == nil {// 查看用户是否存在
 				bodyJSON.Set("status", "failed")
-				bodyJSON.Set("msg", result)
+				bodyJSON.Set("msg", "user not found")
+			}else{
+				msg.Content = inputJson.Get("msg").MustString()
+				msg.Createtime = time.Now()
+				msg.State = 10
+				// 0为系统消息 ，10为未查看，11为已查看，但未知悉，12为已查看，已知悉，13为已撤回
+			
+				result, err := models.SendMessage(&msg)
+				if err == nil {
+					bodyJSON.Set("status", "success")
+					bodyJSON.Set("msg", result)
+				} else {
+					bodyJSON.Set("status", "failed")
+					bodyJSON.Set("msg", result)
+				}
 			}
 		}
 	} else {
@@ -48,11 +57,11 @@ func (this *msgController) Post() {
 }
 
 // 撤回信息，（只能是未读的） WithdrawalMessage
-func (this *msgController) delete() {
+func (this *MsgController) delete() {
 
 	bodyJSON := simplejson.New()
 	if inputJson, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
-		if nil != this.GetSession("id") {
+		if nil == this.GetSession("id") {
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
 		}else{
@@ -77,20 +86,24 @@ func (this *msgController) delete() {
 	this.Ctx.Output.Body(body)
 }
 
-//获取消息, 被获取了，数据库就算已读
-func (this *msgController) Get() {
+//获取消息, 被获取了，数据库就算已读（TODO 状态修改还没加）
+func (this *MsgController) Get() {
 	
 	bodyJSON := simplejson.New()
-	if inputJson, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
-		if nil != this.GetSession("id") {
-			bodyJSON.Set("status", "failed")
-			bodyJSON.Set("msg", "Login expired")
-		}else{
-			var readData []models.Msg
-			var unreadData []models.Msg
-			fromid := this.GetSession("id").(int)
-			// mode 0 is history, 1 (not zero) is for change
-			if inputJson.Get("history").MustInt() == 0 {
+	if this.GetSession("id") == nil  {
+		bodyJSON.Set("status", "failed")
+		bodyJSON.Set("msg", "Login expired")
+	}else{
+		var readData []models.Msg
+		var unreadData []models.Msg
+		fmt.Println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
+		fmt.Println(this.GetSession("id"))
+		fromid := this.GetSession("id").(int)
+		fmt.Println("ssssssssssssssssssssssssssssss")
+		// mode 0 is history, 1 (not zero) is for change
+		if history, err :=this.GetInt("history"); err == nil {
+			if history == 0 {
+
 				limit, err := this.GetInt("limit")
 				if err != nil {
 					limit = -1
@@ -99,15 +112,20 @@ func (this *msgController) Get() {
 				if err != nil {
 					offset = 0
 				}
-				toid := inputJson.Get("with").MustInt()
-				readData, err = models.GetHistory(fromid,toid, limit, offset)
+				toid,err := this.GetInt("with")
+				if err == nil {
+					readData, err = models.GetHistory(fromid,toid, limit, offset)
+				}else{
+					bodyJSON.Set("status", "failed")
+					bodyJSON.Set("msg", "please give the people id whose record with you you want to get")
+				}
 			}else{
 				readData,unreadData, err = models.GetMessage(fromid)
 			}
 
 			if err == nil {
 				bodyJSON.Set("status", "success")
-
+	
 				tmpMapArr := make([]interface{}, len(readData))
 				for i, p := range readData {
 					tmpMap := make(map[string]interface{})
@@ -120,8 +138,8 @@ func (this *msgController) Get() {
 					tmpMapArr[i] = tmpMap
 				}
 				bodyJSON.Set("readData", tmpMapArr)
-
-				if inputJson.Get("history").MustInt() != 0 {
+	
+				if history != 0 {
 					tmpMapArr := make([]interface{}, len(unreadData))
 					for i, p := range unreadData {
 						tmpMap := make(map[string]interface{})
@@ -136,14 +154,17 @@ func (this *msgController) Get() {
 					bodyJSON.Set("unreadData", tmpMapArr)
 				}
 			} else {
-				bodyJSON.Set("status", "failed")
-				bodyJSON.Set("msg", "get message error,you can try to find us for help")
+				if _, ok := bodyJSON.CheckGet("status");!ok{
+					bodyJSON.Set("status", "failed")
+					bodyJSON.Set("msg", "get message error,you can try to find us for help")
+				}
 			}
+		}else{
+			bodyJSON.Set("status", "failed")
+			bodyJSON.Set("msg", "please input history mode")
 		}
-	} else {
-		bodyJSON.Set("status", "failed")
-		bodyJSON.Set("msg", "invalid msg format")
 	}
+	
 	body, _ := bodyJSON.Encode()
 	this.Ctx.Output.Body(body)
 }

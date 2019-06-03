@@ -12,8 +12,8 @@ import (
 
 type Msg struct {
 	Mid         	int    		`orm:"column(mid);pk;auto"`
-	Fromid    		int  		`orm:"column(fromid);rel(fk)"`
-	Toid    		int  		`orm:"column(toid);rel(fk)"`
+	Fromid    		*User  		`orm:"column(fromid);rel(fk)"`
+	Toid    		*User  		`orm:"column(toid);rel(fk)"`
 	Createtime 		time.Time  	`orm:"column(create_time);type(datetime);"`
 	State       	uint  		`orm:"column(state)"`
 	Content     	string  	`orm:"column(content);size(140)"`
