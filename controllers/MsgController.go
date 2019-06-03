@@ -29,7 +29,8 @@ func (this *MsgController) Post() {
 			err2 = nil
 			msg.Fromid,err1 = models.GetUserById(this.GetSession("id").(int))
 			msg.Toid,err2 = models.GetUserById(inputJson.Get("to").MustInt())
-			if err1 == nil || err2 == nil {// 查看用户是否存在
+			if err1 != nil || err2 != nil {// 查看用户是否存在
+				// fmt.Println(inputJson.Get("to").MustInt())
 				bodyJSON.Set("status", "failed")
 				bodyJSON.Set("msg", "user not found")
 			}else{
@@ -43,6 +44,7 @@ func (this *MsgController) Post() {
 					bodyJSON.Set("status", "success")
 					bodyJSON.Set("msg", result)
 				} else {
+					fmt.Println(err)
 					bodyJSON.Set("status", "failed")
 					bodyJSON.Set("msg", result)
 				}
@@ -88,18 +90,15 @@ func (this *MsgController) delete() {
 
 //获取消息, 被获取了，数据库就算已读（TODO 状态修改还没加）
 func (this *MsgController) Get() {
-	
 	bodyJSON := simplejson.New()
+	fmt.Println(this.GetSession("id"))
 	if this.GetSession("id") == nil  {
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "Login expired")
 	}else{
 		var readData []models.Msg
 		var unreadData []models.Msg
-		fmt.Println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
-		fmt.Println(this.GetSession("id"))
 		fromid := this.GetSession("id").(int)
-		fmt.Println("ssssssssssssssssssssssssssssss")
 		// mode 0 is history, 1 (not zero) is for change
 		if history, err :=this.GetInt("history"); err == nil {
 			if history == 0 {
