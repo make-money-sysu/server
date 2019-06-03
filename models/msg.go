@@ -34,3 +34,21 @@ func SendMessage(m *Msg) (msg string, err error) {
 	
 	return "",err
 }
+
+func WithdrawalMessage(from int,mid int) (msg string, err error) {
+	// o := orm.NewOrm()
+	
+	return "",err
+}
+
+func GetMessage(fromid int) (readData []Msg, unreadData []Msg,err error) {
+	// o := orm.NewOrm()
+	
+	return nil, nil, err
+}
+
+func GetHistory(fromid int, toid int, limit int, offset int) (ml []Msg, err error) {
+	// o := orm.NewOrm()
+	
+	return nil, err
+}
