@@ -16,6 +16,7 @@ type MsgController struct {
 
 // 发送信息
 func (this *MsgController) Post() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	var msg models.Msg
 	bodyJSON := simplejson.New()
 	if inputJson, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
@@ -60,6 +61,7 @@ func (this *MsgController) Post() {
 
 // 撤回信息，（只能是未读的） WithdrawalMessage
 func (this *MsgController) Delete() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 
 	bodyJSON := simplejson.New()
 	if inputJson, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
@@ -90,6 +92,7 @@ func (this *MsgController) Delete() {
 
 //获取消息, 被获取了，数据库就算已读（TODO 状态修改还没加）
 func (this *MsgController) Get() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	bodyJSON := simplejson.New()
 	fmt.Println(this.GetSession("id"))
 	if this.GetSession("id") == nil  {

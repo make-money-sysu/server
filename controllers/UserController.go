@@ -23,6 +23,7 @@ func (this *UserController) Post() {
 		_, err = models.AddUser(&user)
 		if err == nil {
 			bodyJSON.Set("status", "success")
+			bodyJSON.Set("msg", "just a msg")
 		} else {
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "this user already registered")
@@ -30,6 +31,8 @@ func (this *UserController) Post() {
 	} else {
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "invalid user infomation format")
+		bodyJSON.Set("err", err)
+		fmt.Println(err)
 	}
 	body, _ := bodyJSON.MarshalJSON()
 	this.Ctx.Output.Body(body)
@@ -82,8 +85,9 @@ func (this *UserController) Get() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
 	
 	bodyJSON := simplejson.New()
-	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
-	if err == nil {
+	//id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
+	if this.GetSession("id") != nil {
+		id := this.GetSession("id").(int)
 		var user *models.User
 		user, err := models.GetUserById(id)
 		if err == nil {
@@ -107,7 +111,7 @@ func (this *UserController) Get() {
 		}
 	} else {
 		bodyJSON.Set("status", "failed")
-		bodyJSON.Set("msg", "invalid user id format")
+		bodyJSON.Set("msg", "Login expired")
 	}
 	body, _ := bodyJSON.MarshalJSON()
 	this.Ctx.Output.Body(body)
