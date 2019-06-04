@@ -81,7 +81,21 @@ GET为获取问卷列表，注意这里支持对问卷id,发布者id,问卷名�
 }
 ```
 
-POST为创建问卷，请求体为json格式，字段名同数据库(id随便填，尽量不要为空，不确定为空可不可以解析)，如果创建成功，则返回json:
+POST为创建问卷，请求体为json格式，字段名同数据库(id随便填，尽量不要为空，不确定为空可不可以解析).
+
+创建问卷样例：
+
+```
+{
+	"id": 16,
+	"publisher_id": 16340133,
+	"name": "testing",
+	"content": "[tetete]"
+}
+```
+
+如果创建成功，则返回json:
+
 ```
 {
 	"status" : "success",
@@ -96,7 +110,21 @@ POST为创建问卷，请求体为json格式，字段名同数据库(id随便填
 }
 ```
 
-PUT为修改问卷，请求Body类似POST，但是需要提供id（地址中），如果修改成功，则返回json:
+PUT为修改问卷，请求Body类似POST，但是需要提供id（地址中）。
+
+PUT修改问卷样例(/survey/1)：
+
+```
+{
+	"id": 1,
+	"publisher_id": 16340133,
+	"name": "testing hhhhhh",
+	"content": "[Test PUT]"
+}
+```
+
+如果修改成功，则返回json:
+
 ```
 {
 	"status" : "success"
@@ -110,7 +138,12 @@ PUT为修改问卷，请求Body类似POST，但是需要提供id（地址中）�
 }
 ```
 
-DELETE为删除问卷，需要提供id（地址中），如果删除成功，则返回json:
+DELETE为删除问卷，需要提供id（地址中）。
+
+DELETE删除样例：/survey/1
+
+如果删除成功，则返回json:
+
 ```
 {
 	"status" : "success"

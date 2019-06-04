@@ -3,7 +3,7 @@ package controllers
 import (
 	"server/models"
 	"strconv"
-
+	"fmt"
 	"github.com/bitly/go-simplejson"
 
 	"github.com/astaxie/beego"
@@ -15,7 +15,7 @@ type SurveyController struct {
 
 func (this *SurveyController) Get() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
-	
+
 	id := this.GetString("id")
 	publisherId := this.GetString("publisher_id")
 	name := this.GetString("name")
@@ -67,6 +67,10 @@ func (this *SurveyController) Post() {
 	inputJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
 	if err == nil {
 		publisher_id := inputJSON.Get("publisher_id").MustInt()
+		fmt.Println("Session ID: ")
+		fmt.Println(this.GetSession("id"))
+		fmt.Println("PublisherId: ")
+		fmt.Println(publisher_id)
 		if publisher_id != this.GetSession("id").(int) {
 			this.Abort("Login expired")
 		}
@@ -91,6 +95,8 @@ func (this *SurveyController) Post() {
 func (this *SurveyController) Put() {
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
+	fmt.Println("ID: ")
+	fmt.Println(id)
 	if err == nil {
 		var survey models.Survey
 		inputJSON, _ := simplejson.NewJson(this.Ctx.Input.RequestBody)
@@ -103,6 +109,7 @@ func (this *SurveyController) Put() {
 		survey.Content = inputJSON.Get("content").MustString()
 		survey.Id = id
 		err = models.UpdateSurveyById(&survey)
+		fmt.Println(err)
 	}
 	if err == nil {
 		bodyJSON.Set("status", "success")

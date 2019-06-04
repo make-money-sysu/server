@@ -19,7 +19,7 @@ type Survey struct {
 func (t *Survey) TableName() string {
 	return "survey"
 }
-
+wo
 func init() {
 	orm.RegisterModel(new(Survey))
 }

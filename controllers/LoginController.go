@@ -14,9 +14,14 @@ type LoginController struct {
 
 //登录相关逻辑
 func (this *LoginController) Post() {
+	// Cross
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+
 	if inputJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
 		id, _ := inputJSON.Get("id").Int()
 		passord, _ := inputJSON.Get("password").String()
+		fmt.Println(id)
+		fmt.Println(passord)
 		success := models.UserLogin(id, passord)
 		bodyJSON := simplejson.New()
 		if success {
