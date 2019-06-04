@@ -36,3 +36,6 @@ We, **[M$ Club](https://github.com/make-money-sysu)**, are aiming to construct a
 
 #### 2019-6-3 增加pakage返回信息
 根据文档，pakage的返回值添加前端需要的一些信息
+
+#### 2019-6-4 添加消息机制
+实现消息机制，文档已更新，完成一次简单测试。
