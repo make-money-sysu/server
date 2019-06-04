@@ -59,7 +59,7 @@ func (this *MsgController) Post() {
 }
 
 // 撤回信息，（只能是未读的） WithdrawalMessage
-func (this *MsgController) delete() {
+func (this *MsgController) Delete() {
 
 	bodyJSON := simplejson.New()
 	if inputJson, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
@@ -129,8 +129,15 @@ func (this *MsgController) Get() {
 				for i, p := range readData {
 					tmpMap := make(map[string]interface{})
 					tmpMap["mid"] = p.Mid
-					tmpMap["fromid"] = p.Fromid // TODO:: add name
-					tmpMap["toid"] = p.Toid
+					tmpMap["fromid"] = p.Fromid.Id
+					fromuser, _ := models.GetUserById(p.Fromid.Id)
+					tmpMap["from_realname"] = fromuser.RealName
+					tmpMap["from_nickname"] = fromuser.NickName
+					tmpMap["toid"] = p.Toid.Id
+					touser, _ := models.GetUserById(p.Toid.Id)
+					tmpMap["to_realname"] = touser.RealName
+					tmpMap["to_nickname"] = touser.NickName
+					
 					tmpMap["create_time"] = p.Createtime.String()
 					tmpMap["Content"] = p.Content
 					tmpMap["state"] = p.State
@@ -143,8 +150,15 @@ func (this *MsgController) Get() {
 					for i, p := range unreadData {
 						tmpMap := make(map[string]interface{})
 						tmpMap["mid"] = p.Mid
-						tmpMap["fromid"] = p.Fromid // TODO:: add name
-						tmpMap["toid"] = p.Toid
+						tmpMap["fromid"] = p.Fromid.Id
+						fromuser, _ := models.GetUserById(p.Fromid.Id)
+						tmpMap["from_realname"] = fromuser.RealName
+						tmpMap["from_nickname"] = fromuser.NickName
+						tmpMap["toid"] = p.Toid.Id
+						touser, _ := models.GetUserById(p.Toid.Id)
+						tmpMap["to_realname"] = touser.RealName
+						tmpMap["to_nickname"] = touser.NickName
+
 						tmpMap["create_time"] = p.Createtime.String()
 						tmpMap["Content"] = p.Content
 						tmpMap["state"] = p.State

@@ -58,7 +58,7 @@ create table package
 
 create table msg
 (
-	mid int unsigned not null auto_increment primary key,
+	mid int not null auto_increment primary key,
 	fromid int unsigned not null,
 	toid int unsigned not null,
 	create_time datetime,

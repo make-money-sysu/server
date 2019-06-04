@@ -1,8 +1,8 @@
 package models
 
 import (
-	// "errors"
-	// "fmt"
+	"errors"
+	"fmt"
 	// "reflect"
 	// "strings"
 	"time"
@@ -35,13 +35,23 @@ func SendMessage(m *Msg) (msg string, err error) {
 	return "sent", err
 }
 
-func WithdrawalMessage(from int,mid int) (msg string, err error) {
+func WithdrawalMessage(from int,mid int) (result string, err error) {
 	o := orm.NewOrm()
+	var msg Msg
 	//  0为系统消息 ，10为未查看，11为已查看，但未知悉，12为已查看，已知悉，13为已撤回
-	if num, err := o.Delete(&Msg{Mid: mid, State: 10}); err == nil && num != 0 {
-		return "delete successed", err
+	qs := o.QueryTable(new(Msg))
+	cond := orm.NewCondition()
+	fromuser,err := GetUserById(from)
+	fmt.Println(fromuser)
+	fmt.Println(mid)
+	cond = cond.And("Mid", mid).And("State", 10).And("Fromid",fromuser)
+	qs.SetCond(cond).One(&msg)
+	num, err := o.Delete(&msg)
+
+	if num == 0 {
+		return "could not find it,or have no thr right", errors.New("could not find it,maybe some error happened")
 	}else{
-		return "some error happend",err
+		return "made it", err
 	}
 }
 
@@ -64,8 +74,17 @@ func GetMessage(fromid int) (readData []Msg, unreadData []Msg,err error) {
 
 	// cond = cond1.OrCond(cond2)
 	qs.SetCond(cond1).All(&readData)
+	
+	qs.SetCond(cond1).Update(orm.Params{
+		"State": 12,
+	})
 
 	qs.SetCond(cond2).All(&unreadData)
+
+	qs.SetCond(cond2).Update(orm.Params{
+		"State": 11,
+	})
+
 	return readData, unreadData, err
 }
 
