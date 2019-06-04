@@ -54,3 +54,17 @@ create table package
 	foreign key(owner_id) references user(id),
 	foreign key(receiver_id) references user(id)
 )
+
+
+create table msg
+(
+	mid int not null auto_increment primary key,
+	fromid int unsigned not null,
+	toid int unsigned not null,
+	create_time datetime,
+	-- 0为系统消息 ，10为未查看，11为已查看，但未知悉，12为已查看，已知悉，13为已撤回
+	state int unsigned default 10,
+	content varchar(140) not null,
+	foreign key(fromid) references user(id),
+	foreign key(toid) references user(id)
+)
