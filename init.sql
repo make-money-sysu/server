@@ -13,14 +13,19 @@ create table user
 	phone varchar(20) not null,
 	email varchar(40) not null
 );
+
 create table survey
 (
 	id int unsigned not null auto_increment primary key auto_increment,
 	publisher_id int unsigned not null,
-	name varchar(40) not null,
+	title varchar(40) not null,
 	content varchar(1000) not null,
+	state int not null default 0,
+	checked int not null default 0,
+	create_time datetime,
 	foreign key(publisher_id) references user(id)
 );
+
 create table do_survey
 (
 	survey_id int unsigned not null,

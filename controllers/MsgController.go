@@ -16,11 +16,14 @@ type MsgController struct {
 
 // 发送信息
 func (this *MsgController) Post() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+	
 	var msg models.Msg
 	bodyJSON := simplejson.New()
 	if inputJson, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
 		if nil == this.GetSession("id") {
+			this.Ctx.Output.SetStatus(401)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
 		}else{
@@ -32,6 +35,7 @@ func (this *MsgController) Post() {
 			msg.Toid,err2 = models.GetUserById(inputJson.Get("to").MustInt())
 			if err1 != nil || err2 != nil {// 查看用户是否存在
 				// fmt.Println(inputJson.Get("to").MustInt())
+				this.Ctx.Output.SetStatus(403)
 				bodyJSON.Set("status", "failed")
 				bodyJSON.Set("msg", "user not found")
 			}else{
@@ -45,13 +49,14 @@ func (this *MsgController) Post() {
 					bodyJSON.Set("status", "success")
 					bodyJSON.Set("msg", result)
 				} else {
-					fmt.Println(err)
+					this.Ctx.Output.SetStatus(403)
 					bodyJSON.Set("status", "failed")
 					bodyJSON.Set("msg", result)
 				}
 			}
 		}
 	} else {
+		this.Ctx.Output.SetStatus(400)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "invalid msg format")
 	}
@@ -61,11 +66,14 @@ func (this *MsgController) Post() {
 
 // 撤回信息，（只能是未读的） WithdrawalMessage
 func (this *MsgController) Delete() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+	
 
 	bodyJSON := simplejson.New()
 	if inputJson, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
 		if nil == this.GetSession("id") {
+			this.Ctx.Output.SetStatus(401)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
 		}else{
@@ -78,11 +86,13 @@ func (this *MsgController) Delete() {
 				bodyJSON.Set("status", "success")
 				bodyJSON.Set("msg", result)
 			} else {
+				this.Ctx.Output.SetStatus(403)
 				bodyJSON.Set("status", "failed")
 				bodyJSON.Set("msg", result)
 			}
 		}
 	} else {
+		this.Ctx.Output.SetStatus(400)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "invalid msg format")
 	}
@@ -92,10 +102,13 @@ func (this *MsgController) Delete() {
 
 //获取消息, 被获取了，数据库就算已读（TODO 状态修改还没加）
 func (this *MsgController) Get() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+	
 	bodyJSON := simplejson.New()
 	fmt.Println(this.GetSession("id"))
 	if this.GetSession("id") == nil  {
+		this.Ctx.Output.SetStatus(401)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "Login expired")
 	}else{
@@ -118,6 +131,7 @@ func (this *MsgController) Get() {
 				if err == nil {
 					readData, err = models.GetHistory(fromid,toid, limit, offset)
 				}else{
+					this.Ctx.Output.SetStatus(403)
 					bodyJSON.Set("status", "failed")
 					bodyJSON.Set("msg", "please give the people id whose record with you you want to get")
 				}
@@ -171,11 +185,13 @@ func (this *MsgController) Get() {
 				}
 			} else {
 				if _, ok := bodyJSON.CheckGet("status");!ok{
+					this.Ctx.Output.SetStatus(403)
 					bodyJSON.Set("status", "failed")
 					bodyJSON.Set("msg", "get message error,you can try to find us for help")
 				}
 			}
 		}else{
+			this.Ctx.Output.SetStatus(400)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "please input history mode")
 		}

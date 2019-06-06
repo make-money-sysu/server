@@ -15,16 +15,20 @@ type PackageController struct {
 }
 
 func (this *PackageController) Post() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+
 	bodyJSON := simplejson.New()
 	var thisPackage models.Package
 	packageJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
 	if err != nil {
 		//校验格式
+		this.Ctx.Output.SetStatus(403)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "invalid json format")
 	}else if this.GetSession("id") == nil {
 		// 检查session
+		this.Ctx.Output.SetStatus(401)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "Login expired")
 	}else{
@@ -35,20 +39,25 @@ func (this *PackageController) Post() {
 		thisPackage.State = 0
 		thisPackage.Note = packageJSON.Get("note").MustString()
 		if thisPackage.OwnerId.Balance < thisPackage.Reward {
-			this.Abort("user balance doesn't enough")
-		}
-		if err == nil {
-			_, err := models.AddPackage(&thisPackage)
-			if err == nil {
-				bodyJSON.Set("status", "success")
-				bodyJSON.Set("msg", "post success")
-			} else {
-				bodyJSON.Set("status", "failed")
-				bodyJSON.Set("msg", "create the pakage error, please contact with us")
-			}
-		} else {
+			this.Ctx.Output.SetStatus(403)
 			bodyJSON.Set("status", "failed")
-			bodyJSON.Set("msg", "this user doesn't not exist")
+			bodyJSON.Set("msg", "user balance doesn't enough")
+		}else{
+			if err == nil {
+				_, err := models.AddPackage(&thisPackage)
+				if err == nil {
+					bodyJSON.Set("status", "success")
+					bodyJSON.Set("msg", "post success")
+				} else {
+					this.Ctx.Output.SetStatus(403)
+					bodyJSON.Set("status", "failed")
+					bodyJSON.Set("msg", "create the pakage error, please contact with us")
+				}
+			} else {
+				this.Ctx.Output.SetStatus(403)
+				bodyJSON.Set("status", "failed")
+				bodyJSON.Set("msg", "this user doesn't not exist")
+			}
 		}
 	}
 	
@@ -57,59 +66,66 @@ func (this *PackageController) Post() {
 }
 
 func (this *PackageController) Put() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+
+	bodyJSON := simplejson.New()
 	id, err := this.GetInt("id")
 	if err != nil {
-		this.Abort("invalid id")
-	}
-	method := this.GetString("method")
-	bodyJSON := simplejson.New()
-	//接单
-	if method == "receive" {
-		// this.GetSession("id").(int)
+		this.Ctx.Output.SetStatus(400)
+		bodyJSON.Set("status", "failed")
+		bodyJSON.Set("status", "formate error,id is invalid")
+	}else{
 		if this.GetSession("id") == nil {
+			this.Ctx.Output.SetStatus(401)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
 		}else{
-			err = models.ReceivePackage(id, this.GetSession("id").(int))
-			if err != nil {
-				bodyJSON.Set("status", "failed")
-				bodyJSON.Set("msg", "the package or the user doesn't exist")
-			} else {
-				bodyJSON.Set("status", "success")
-				bodyJSON.Set("msg", "you have recived it")
-			}
-		}
-	} else if method == "confirm" {
-		if this.GetSession("id") == nil {
-			bodyJSON.Set("status", "failed")
-			bodyJSON.Set("msg", "Login expired")
-		}else{
-			thisPackage, _ := models.GetPackageById(id)
-			if this.GetSession("id") == nil || thisPackage.OwnerId.Id != this.GetSession("id") {
-				bodyJSON.Set("status", "failed")
-				bodyJSON.Set("msg", "Login expired")
-			}else{
-				err = models.ConfirmPackage(id)
+			method := this.GetString("method")
+			//接单
+			if method == "receive" {
+				err = models.ReceivePackage(id, this.GetSession("id").(int))
 				if err != nil {
+					this.Ctx.Output.SetStatus(403)
 					bodyJSON.Set("status", "failed")
-					bodyJSON.Set("msg", "create the pakage error, please contact with us")
+					bodyJSON.Set("msg", "the package or the user doesn't exist")
 				} else {
 					bodyJSON.Set("status", "success")
-					bodyJSON.Set("msg", "confirmed")
+					bodyJSON.Set("msg", "you have recived it")
 				}
+			} else if method == "confirm" {
+				thisPackage, _ := models.GetPackageById(id)
+				if thisPackage.OwnerId.Id != this.GetSession("id") {
+					this.Ctx.Output.SetStatus(401)
+					bodyJSON.Set("status", "failed")
+					bodyJSON.Set("msg", "Login expired")
+				}else{
+					err = models.ConfirmPackage(id)
+					if err != nil {
+						this.Ctx.Output.SetStatus(403)
+						bodyJSON.Set("status", "failed")
+						bodyJSON.Set("msg", "create the pakage error, please contact with us")
+					} else {
+						bodyJSON.Set("status", "success")
+						bodyJSON.Set("msg", "confirmed")
+					}
+				}
+			} else {
+				this.Ctx.Output.SetStatus(400)
+				bodyJSON.Set("status", "failed")
+				bodyJSON.Set("msg", "found no method")
 			}
 		}
-	} else {
-		bodyJSON.Set("status", "failed")
-		bodyJSON.Set("msg", "found no method")
 	}
+	
 	body, _ := bodyJSON.Encode()
 	this.Ctx.Output.Body(body)
 }
 
 func (this *PackageController) Get() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+	
 	
 	id, err := this.GetInt("id")
 	if err != nil {
