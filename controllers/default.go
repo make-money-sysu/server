@@ -17,7 +17,7 @@ func (c *MainController) Get() {
 
 // Cross Domain
 func (c *MainController) AllowCross() {
-  c.Ctx.ResponseWriter.Header().Set("Access-Control-Allow-Origin:*", "http://localhost:8080")       //允许访问源
+  c.Ctx.ResponseWriter.Header().Set("Access-Control-Allow-Origin:*", "http://localhost:8081")       //允许访问源
   c.Ctx.ResponseWriter.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS")    //允许post访问
   c.Ctx.ResponseWriter.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization") //header的类型
   c.Ctx.ResponseWriter.Header().Set("Access-Control-Max-Age", "1728000")

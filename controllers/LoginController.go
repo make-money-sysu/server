@@ -23,6 +23,8 @@ func (this *LoginController) Post() {
 		if success {
 			bodyJSON.Set("status", "success")
 			bodyJSON.Set("msg", "success")
+			fmt.Println("Set Session ID: ")
+			fmt.Println(id)
 			this.SetSession("id", id)
 		} else {
 			bodyJSON.Set("status", "failed")
