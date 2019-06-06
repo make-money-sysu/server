@@ -16,11 +16,14 @@ type FriendsController struct {
 
 //查询一个用户的好友列表
 func (this *FriendsController) Get() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+	
 	bodyJSON := simplejson.New()
 	
 	// fmt.Println(this.GetSession("id"))
 	if this.GetSession("id") == nil {
+		this.Ctx.Output.SetStatus(401)
 		bodyJSON.Set("status", "fail")
 		bodyJSON.Set("msg", "Login expired")
 	}else{
@@ -38,6 +41,7 @@ func (this *FriendsController) Get() {
 		// fmt.Println(method)
 		var friends []models.Friends
 		if method != "friends" && method != "request" {
+			this.Ctx.Output.SetStatus(400)
 			bodyJSON.Set("status", "fail")
 			bodyJSON.Set("msg", "must have a method")
 		}else{
@@ -87,53 +91,73 @@ func (this *FriendsController) Get() {
 }
 
 func (this *FriendsController) Post() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
-	user1_id, err := this.GetInt("user1_id")
-	if this.GetSession("id").(int) != user1_id {
-		this.Abort("Login expired")
-	}
-	if err != nil {
-		this.Abort("invalid user1 id")
-	}
-	user2_id, err := this.GetInt("user2_id")
-	if err != nil {
-		this.Abort("invalid user2 id")
-	}
-	status := models.AddFriends(user1_id, user2_id)
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+	
+	// user1_id, err := this.GetInt("user1_id")
+
 	bodyJSON := simplejson.New()
-	if status == 0 {
-		bodyJSON.Set("status", "failed")
-		bodyJSON.Set("msg", "user not exist or database error")
-	} else if status == 1 {
-		bodyJSON.Set("status", "success")
-	} else {
-		bodyJSON.Set("status", "failed")
-		bodyJSON.Set("msg", "two user have been friends")
+
+	if this.GetSession("id") == nil {
+		this.Ctx.Output.SetStatus(401)
+		bodyJSON.Set("status", "fail")
+		bodyJSON.Set("msg", "Login expired")
+	}else{
+		var user1_id = this.GetSession("id").(int)
+
+		user2_id, err := this.GetInt("user2_id")
+		if err != nil {
+			this.Ctx.Output.SetStatus(400)
+			bodyJSON.Set("status", "failed")
+			bodyJSON.Set("msg", "invalid user2 id")
+		}else{
+			status := models.AddFriends(user1_id, user2_id)
+			if status == 0 {
+				this.Ctx.Output.SetStatus(403)
+				bodyJSON.Set("status", "failed")
+				bodyJSON.Set("msg", "user not exist or database error")
+			} else if status == 1 {
+				bodyJSON.Set("status", "success")
+				bodyJSON.Set("msg", "successed")
+			} else {
+				this.Ctx.Output.SetStatus(403)
+				bodyJSON.Set("status", "failed")
+				bodyJSON.Set("msg", "two user have been friends")
+			}
+		}
 	}
 	body, _ := bodyJSON.Encode()
 	this.Ctx.Output.Body(body)
 }
 
 func (this *FriendsController) Delete() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "*")
-	user1_id, err := this.GetInt("user1_id")
-	if this.GetSession("id").(int) != user1_id {
-		this.Abort("Login expired")
-	}
-	if err != nil {
-		this.Abort("invalid user1 id")
-	}
-	user2_id, err := this.GetInt("user2_id")
-	if err != nil {
-		this.Abort("invalid user2 id")
-	}
-	err = models.DeleteFriends(user1_id, user2_id)
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+	
 	bodyJSON := simplejson.New()
-	if err != nil {
-		bodyJSON.Set("status", "failed")
-		bodyJSON.Set("msg", err.Error())
-	} else {
-		bodyJSON.Set("status", "success")
+	if this.GetSession("id") == nil {
+		this.Ctx.Output.SetStatus(401)
+		bodyJSON.Set("status", "fail")
+		bodyJSON.Set("msg", "Login expired")
+	}else{
+		var user1_id = this.GetSession("id").(int)
+
+		user2_id, err := this.GetInt("user2_id")
+		if err != nil {
+			this.Ctx.Output.SetStatus(400)
+			bodyJSON.Set("status", "failed")
+			bodyJSON.Set("msg", "invalid user2 id")
+		}else{
+			err = models.DeleteFriends(user1_id, user2_id)
+			if err != nil {
+				this.Ctx.Output.SetStatus(403)
+				bodyJSON.Set("status", "failed")
+				bodyJSON.Set("msg", err.Error())
+			} else {
+				bodyJSON.Set("status", "success")
+				bodyJSON.Set("msg", "success")
+			}
+		}
 	}
 	body, _ := bodyJSON.Encode()
 	this.Ctx.Output.Body(body)

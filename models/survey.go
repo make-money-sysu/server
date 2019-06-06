@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/astaxie/beego/orm"
 )
 
 type Survey struct {
-	Id          int    `orm:"column(id);auto"`
-	PublisherId *User  `orm:"column(publisher_id);rel(fk)"`
-	Name        string `orm:"column(name);size(40)"`
-	Content     string `orm:"column(content);size(1000)"`
+	Id          int    		`orm:"column(id);auto"`
+	PublisherId *User  		`orm:"column(publisher_id);rel(fk)"`
+	Title      	string 		`orm:"column(title);size(40)"`
+	State		int			`orm:"column(state);null"`
+	Checked		int			`orm:"column(checked);null"`
+	Content     string 		`orm:"column(content);size(1000)"`
+	CreateTime 	time.Time 	`orm:"column(create_time);type(datetime);null"`
 }
 
 func (t *Survey) TableName() string {
