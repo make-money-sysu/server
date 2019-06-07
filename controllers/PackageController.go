@@ -21,9 +21,12 @@ func (this *PackageController) Post() {
 	bodyJSON := simplejson.New()
 	var thisPackage models.Package
 	packageJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
-	if err != nil {
+	_, ok1 := packageJSON.CheckGet("reward")
+	_, ok2 := packageJSON.CheckGet("note")
+	// if _, ok := bodyJSON.CheckGet("status");!ok{
+	if err != nil || !ok1 || !ok2{
 		//校验格式
-		this.Ctx.Output.SetStatus(403)
+		this.Ctx.Output.SetStatus(400)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "invalid json format")
 	}else if this.GetSession("id") == nil {
@@ -54,7 +57,7 @@ func (this *PackageController) Post() {
 					bodyJSON.Set("msg", "create the pakage error, please contact with us")
 				}
 			} else {
-				this.Ctx.Output.SetStatus(403)
+				this.Ctx.Output.SetStatus(404)
 				bodyJSON.Set("status", "failed")
 				bodyJSON.Set("msg", "this user doesn't not exist")
 			}
