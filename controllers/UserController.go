@@ -26,6 +26,7 @@ func (this *UserController) Post() {
 		if err == nil {
 			bodyJSON.Set("status", "success")
 			bodyJSON.Set("msg", "just a msg")
+			// this.SetSession("id", id)
 		} else {
 			this.Ctx.Output.SetStatus(403)
 			bodyJSON.Set("status", "failed")
