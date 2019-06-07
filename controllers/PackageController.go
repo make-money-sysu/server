@@ -4,9 +4,10 @@ import (
 	"server/models"
 	"time"
 
+	"fmt"
+
 	"github.com/astaxie/beego"
 	"github.com/bitly/go-simplejson"
-	"fmt"
 )
 
 // PackageController operations for Package
@@ -26,14 +27,15 @@ func (this *PackageController) Post() {
 		this.Ctx.Output.SetStatus(403)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "invalid json format")
-	}else if this.GetSession("id") == nil {
+	} else if this.GetSession("id") == nil {
 		// 检查session
 		this.Ctx.Output.SetStatus(401)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "Login expired")
-	}else{
+	} else {
+		fmt.Println(string(this.Ctx.Input.RequestBody))
 		thisPackage.OwnerId, err = models.GetUserById(this.GetSession("id").(int))
-		
+
 		thisPackage.CreateTime = time.Now()
 		thisPackage.Reward = float32(packageJSON.Get("reward").MustFloat64())
 		thisPackage.State = 0
@@ -42,7 +44,7 @@ func (this *PackageController) Post() {
 			this.Ctx.Output.SetStatus(403)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "user balance doesn't enough")
-		}else{
+		} else {
 			if err == nil {
 				_, err := models.AddPackage(&thisPackage)
 				if err == nil {
@@ -60,7 +62,7 @@ func (this *PackageController) Post() {
 			}
 		}
 	}
-	
+
 	body, _ := bodyJSON.Encode()
 	this.Ctx.Output.Body(body)
 }
@@ -75,12 +77,12 @@ func (this *PackageController) Put() {
 		this.Ctx.Output.SetStatus(400)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("status", "formate error,id is invalid")
-	}else{
+	} else {
 		if this.GetSession("id") == nil {
 			this.Ctx.Output.SetStatus(401)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
-		}else{
+		} else {
 			method := this.GetString("method")
 			//接单
 			if method == "receive" {
@@ -99,7 +101,7 @@ func (this *PackageController) Put() {
 					this.Ctx.Output.SetStatus(401)
 					bodyJSON.Set("status", "failed")
 					bodyJSON.Set("msg", "Login expired")
-				}else{
+				} else {
 					err = models.ConfirmPackage(id)
 					if err != nil {
 						this.Ctx.Output.SetStatus(403)
@@ -117,7 +119,7 @@ func (this *PackageController) Put() {
 			}
 		}
 	}
-	
+
 	body, _ := bodyJSON.Encode()
 	this.Ctx.Output.Body(body)
 }
@@ -125,8 +127,7 @@ func (this *PackageController) Put() {
 func (this *PackageController) Get() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
-	
-	
+
 	id, err := this.GetInt("id")
 	if err != nil {
 		id = 0
@@ -160,38 +161,36 @@ func (this *PackageController) Get() {
 		tmpMap["id"] = p.Id
 		fmt.Println(p.ReceiverId)
 		tmpMap["owner_id"] = p.OwnerId.Id
-		owner, err :=models.GetUserById(p.OwnerId.Id)
+		owner, err := models.GetUserById(p.OwnerId.Id)
 		if err != nil {
-			tmpMap["owner_real_name"]=owner.RealName
-			tmpMap["owner_nick_name"]=owner.NickName
-			tmpMap["owner_Phone"]=owner.Phone
-		}else{
-			tmpMap["owner_real_name"]="none"
-			tmpMap["owner_nick_name"]="none"
-			tmpMap["owner_Phone"]="none"
+			tmpMap["owner_real_name"] = owner.RealName
+			tmpMap["owner_nick_name"] = owner.NickName
+			tmpMap["owner_Phone"] = owner.Phone
+		} else {
+			tmpMap["owner_real_name"] = "none"
+			tmpMap["owner_nick_name"] = "none"
+			tmpMap["owner_Phone"] = "none"
 		}
-
-
 
 		if p.ReceiverId == nil {
 			tmpMap["receiver_id"] = "none"
-			tmpMap["owner_real_name"]="none"
-			tmpMap["owner_nick_name"]="none"
-			tmpMap["owner_Phone"]="none"
-		}else{
+			tmpMap["owner_real_name"] = "none"
+			tmpMap["owner_nick_name"] = "none"
+			tmpMap["owner_Phone"] = "none"
+		} else {
 			tmpMap["receiver_id"] = p.ReceiverId.Id
-			receiver, err :=models.GetUserById(p.ReceiverId.Id)
+			receiver, err := models.GetUserById(p.ReceiverId.Id)
 			if err != nil {
-				tmpMap["receiver_real_name"]=receiver.RealName
-				tmpMap["receiver_nick_name"]=receiver.NickName
-				tmpMap["receiver_Phone"]=receiver.Phone
-			}else{
-				tmpMap["receiver_real_name"]="none"
-				tmpMap["receiver_nick_name"]="none"
-				tmpMap["receiver_Phone"]="none"
+				tmpMap["receiver_real_name"] = receiver.RealName
+				tmpMap["receiver_nick_name"] = receiver.NickName
+				tmpMap["receiver_Phone"] = receiver.Phone
+			} else {
+				tmpMap["receiver_real_name"] = "none"
+				tmpMap["receiver_nick_name"] = "none"
+				tmpMap["receiver_Phone"] = "none"
 			}
 		}
-		
+
 		tmpMap["create_time"] = p.CreateTime.String()
 		tmpMap["reward"] = p.Reward
 		tmpMap["state"] = p.State
