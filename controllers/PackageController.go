@@ -36,7 +36,7 @@ func (this *PackageController) Post() {
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("msg", "Login expired")
 	} else {
-		fmt.Println(string(this.Ctx.Input.RequestBody))
+		// fmt.Println(string(this.Ctx.Input.RequestBody))
 		thisPackage.OwnerId, err = models.GetUserById(this.GetSession("id").(int))
 
 		thisPackage.CreateTime = time.Now()
@@ -165,7 +165,7 @@ func (this *PackageController) Get() {
 		tmpMap["owner_id"] = p.OwnerId.Id
 		owner, err :=models.GetUserById(p.OwnerId.Id)
 		if err == nil {
-			fmt.Println(owner.RealName)
+			// fmt.Println(owner.RealName)
 			tmpMap["owner_real_name"]=owner.RealName
 			tmpMap["owner_nick_name"]=owner.NickName
 			tmpMap["owner_Phone"]=owner.Phone
