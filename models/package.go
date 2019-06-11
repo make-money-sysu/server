@@ -28,6 +28,10 @@ func init() {
 	orm.RegisterModel(new(Package))
 }
 
+func Typeof(v interface{}) string {
+    return fmt.Sprintf("%T", v)
+}
+
 // AddPackage insert a new Package into database and returns
 // last inserted Id on success.
 func AddPackage(m *Package) (id int64, err error) {
