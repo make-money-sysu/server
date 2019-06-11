@@ -161,10 +161,10 @@ func (this *PackageController) Get() {
 	for i, p := range packages {
 		tmpMap := make(map[string]interface{})
 		tmpMap["id"] = p.Id
-		fmt.Println(p.ReceiverId)
 		tmpMap["owner_id"] = p.OwnerId.Id
 		owner, err :=models.GetUserById(p.OwnerId.Id)
-		if err != nil {
+		if err == nil {
+			fmt.Println(owner.RealName)
 			tmpMap["owner_real_name"]=owner.RealName
 			tmpMap["owner_nick_name"]=owner.NickName
 			tmpMap["owner_Phone"]=owner.Phone
@@ -178,13 +178,13 @@ func (this *PackageController) Get() {
 
 		if p.ReceiverId == nil {
 			tmpMap["receiver_id"] = "none"
-			tmpMap["owner_real_name"]="none"
-			tmpMap["owner_nick_name"]="none"
-			tmpMap["owner_Phone"]="none"
+			tmpMap["receiver_real_name"]="none"
+			tmpMap["receiver_nick_name"]="none"
+			tmpMap["receiver_Phone"]="none"
 		}else{
 			tmpMap["receiver_id"] = p.ReceiverId.Id
 			receiver, err :=models.GetUserById(p.ReceiverId.Id)
-			if err != nil {
+			if err == nil {
 				tmpMap["receiver_real_name"]=receiver.RealName
 				tmpMap["receiver_nick_name"]=receiver.NickName
 				tmpMap["receiver_Phone"]=receiver.Phone
