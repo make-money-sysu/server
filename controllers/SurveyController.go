@@ -3,7 +3,7 @@ package controllers
 import (
 	"server/models"
 	"strconv"
-	// "fmt"
+	"fmt"
 	"time"
 	"github.com/bitly/go-simplejson"
 
@@ -74,6 +74,7 @@ func (this *SurveyController) Post() {
 	bodyJSON := simplejson.New()
 	var survey models.Survey
 	inputJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
+	fmt.Println(err)
 	if err == nil {
 		if nil == this.GetSession("id")  {
 			this.Ctx.Output.SetStatus(401)
