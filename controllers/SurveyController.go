@@ -158,21 +158,27 @@ func (this *SurveyController) Delete() {
 	bodyJSON := simplejson.New()
 	id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if err == nil {
-		to_delete, _ := models.GetSurveyById(id)
-		if nil == this.GetSession("id") || to_delete.PublisherId.Id != this.GetSession("id").(int)  {
-			this.Ctx.Output.SetStatus(401)
-			bodyJSON.Set("status", "failed")
-			bodyJSON.Set("msg", "Login expired")
-		}else{
-			err = models.DeleteSurvey(id)
-			if err == nil {
-				bodyJSON.Set("status", "success")
-				bodyJSON.Set("msg", "deleted")
-			} else {
-				this.Ctx.Output.SetStatus(403)
+		to_delete, err := models.GetSurveyById(id)
+		if err == nil {
+			if nil == this.GetSession("id") || to_delete.PublisherId.Id != this.GetSession("id").(int)  {
+				this.Ctx.Output.SetStatus(401)
 				bodyJSON.Set("status", "failed")
-				bodyJSON.Set("msg", "the id doesn't exist")
+				bodyJSON.Set("msg", "Login expired")
+			}else{
+				err = models.DeleteSurvey(id)
+				if err == nil {
+					bodyJSON.Set("status", "success")
+					bodyJSON.Set("msg", "deleted")
+				} else {
+					this.Ctx.Output.SetStatus(403)
+					bodyJSON.Set("status", "failed")
+					bodyJSON.Set("msg", "the id doesn't exist")
+				}
 			}
+		}else{	
+			this.Ctx.Output.SetStatus(404)
+			bodyJSON.Set("status", "failed")
+			bodyJSON.Set("status", "not found")
 		}
 	} else {
 		this.Ctx.Output.SetStatus(400)
