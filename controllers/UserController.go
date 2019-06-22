@@ -15,8 +15,6 @@ type UserController struct {
 }
 
 func (this *UserController) Post() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
-	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
 	
 	var user models.User
 	bodyJSON := simplejson.New()
@@ -75,8 +73,6 @@ func (this *UserController) Put() {
 }
 
 func (this *UserController) Delete() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
-	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
 	bodyJSON := simplejson.New()
 
 	if nil == this.GetSession("id") {
@@ -102,8 +98,6 @@ func (this *UserController) Delete() {
 }
 
 func (this *UserController) Get() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
-	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
 	bodyJSON := simplejson.New()
 	//id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
 	if this.GetSession("id") != nil {

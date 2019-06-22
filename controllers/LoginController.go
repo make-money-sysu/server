@@ -14,8 +14,6 @@ type LoginController struct {
 
 //登录相关逻辑
 func (this *LoginController) Post() {
-	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
-	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
 	
 	bodyJSON := simplejson.New()
 	fmt.Println(this.Ctx.Input.Header("cookie"))
