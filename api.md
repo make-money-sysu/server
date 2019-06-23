@@ -289,3 +289,16 @@ PUT为接单和确认收货功能，在参数列表中必须提供method，metho
 | delete | 撤回单条信息，已读的不能撤回               | mid，信息id                                           | status,bool，结果是否正常             |
 |        |                                            |                                                       | msg,string,结果信息                   |
 
+
+
+
+
+# 填写问卷
+
+/do_survey
+
+| 方法 | 作用         | 参数                                                         | 返回值                    |
+| ---- | ------------ | ------------------------------------------------------------ | ------------------------- |
+| get  | 获得填写列表 | [survey_id] [recipient_id] [content] [create_time]           | data数组，status 字符串   |
+| post | 上传填写结果 | 无url参数，在body中以json格式发送survey_id，recipient_id和content | status 字符串，msg 字符串 |
+
