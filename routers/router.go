@@ -22,4 +22,5 @@ func init() {
 	beego.Router("/friends", &controllers.FriendsController{})
 	beego.Router("/package?:id", &controllers.PackageController{})
 	beego.Router("/msg", &controllers.MsgController{})
+	beego.Router("/do_survey", &controllers.DoSurveyController{})
 }
