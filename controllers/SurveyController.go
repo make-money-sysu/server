@@ -125,7 +125,7 @@ func (this *SurveyController) Put() {
 		}else{
 			publisher_id := this.GetSession("id").(int)
 			survey.PublisherId, _ = models.GetUserById(publisher_id)
-			survey.Title = inputJSON.Get("Title").MustString()
+			survey.Title = inputJSON.Get("title").MustString()
 			survey.Content = inputJSON.Get("content").MustString()
 			survey.State = inputJSON.Get("state").MustInt()
 			survey.Checked = inputJSON.Get("checked").MustInt()

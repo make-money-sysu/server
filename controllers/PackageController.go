@@ -4,6 +4,7 @@ import (
 	"server/models"
 	"time"
 
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/bitly/go-simplejson"
 )
@@ -72,6 +73,7 @@ func (this *PackageController) Put() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
 
+	fmt.Println(this.GetSession("id"))
 	bodyJSON := simplejson.New()
 	id, err := this.GetInt("id")
 	if err != nil {
@@ -98,7 +100,7 @@ func (this *PackageController) Put() {
 				}
 			} else if method == "confirm" {
 				thisPackage, _ := models.GetPackageById(id)
-				if thisPackage.OwnerId.Id != this.GetSession("id") {
+				if thisPackage.OwnerId.Id != this.GetSession("id").(int) {
 					this.Ctx.Output.SetStatus(401)
 					bodyJSON.Set("status", "failed")
 					bodyJSON.Set("msg", "Login expired")
