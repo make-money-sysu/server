@@ -43,5 +43,3 @@ We, **[M$ Club](https://github.com/make-money-sysu)**, are aiming to construct a
 
 #### 2019-6-7 添加状态码信息 && 修改问卷系统字段信息 && 等等
 添加状态码信息方便前端使用回调；修改问卷系统字段等信息，增加时间和状态等字段信息；删除绝大部分要提供自己id的操作，从session获取。
-
-
