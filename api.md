@@ -302,3 +302,4 @@ PUT为接单和确认收货功能，在参数列表中必须提供method，metho
 | get  | 获得填写列表 | [survey_id] [recipient_id] [content] [create_time]           | data数组，status 字符串   |
 | post | 上传填写结果 | 无url参数，在body中以json格式发送survey_id，recipient_id和content | status 字符串，msg 字符串 |
 
+
