@@ -46,3 +46,6 @@ We, **[M$ Club](https://github.com/make-money-sysu)**, are aiming to construct a
 
 #### 2019-6-26 添加注销功能
 添加注销功能
+
+#### 2019-6-27 修正修改用户信息时的错误
+修正修改用户信息时的错误，现在不需要提供所有的字段。不需要提供用户的id

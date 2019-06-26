@@ -47,15 +47,71 @@ func (this *UserController) Put() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
 	
-	var user models.User
+	fmt.Println(this.Ctx.Input.Header("cookie"))
+
 	bodyJSON := simplejson.New()
-	if err := json.Unmarshal(this.Ctx.Input.RequestBody, &user); err == nil {
-		if nil != this.GetSession("id") && user.Id != this.GetSession("id").(int) {
+	if inputJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
+		if nil == this.GetSession("id") {
 			this.Ctx.Output.SetStatus(401)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
 		}else{
-			err = models.UpdateUserById(&user)
+			user, err := models.GetUserById(this.GetSession("id").(int))
+
+			fmt.Println(user)
+			fmt.Println(inputJSON)
+
+			if _, ok := inputJSON.CheckGet("real_name");ok{
+				user.RealName = inputJSON.Get("real_name").MustString()
+			}
+	
+			if _, ok := inputJSON.CheckGet("password");ok{
+				user.Password = inputJSON.Get("password").MustString()
+			}
+	
+			if _, ok := inputJSON.CheckGet("nick_name");ok{
+				user.NickName = inputJSON.Get("nick_name").MustString()
+			}
+	
+			if _, ok := inputJSON.CheckGet("age");ok{
+				user.Age = inputJSON.Get("age").MustInt()
+			}
+	
+			if _, ok := inputJSON.CheckGet("gender");ok{
+				user.Gender = inputJSON.Get("gender").MustString()
+			}
+	
+			if _, ok := inputJSON.CheckGet("head_picture");ok{
+				user.HeadPicture = inputJSON.Get("head_picture").MustString()
+			}
+	
+			// if _, ok := inputJSON.CheckGet("balance");ok{
+			// 	user.Balance = inputJSON.Get("balance").MustFloat64()
+			// }
+	
+	
+			if _, ok := inputJSON.CheckGet("profession");ok{
+				user.Profession = inputJSON.Get("profession").MustString()
+			}
+	
+			
+			if _, ok := inputJSON.CheckGet("grade");ok{
+				user.Grade = inputJSON.Get("grade").MustString()
+			}
+	
+			if _, ok := inputJSON.CheckGet("phone");ok{
+				user.Phone = inputJSON.Get("phone").MustString()
+			}
+	
+			if _, ok := inputJSON.CheckGet("email");ok{
+				user.Email = inputJSON.Get("email").MustString()
+			}
+	
+		
+			
+			fmt.Println(user)
+
+			err = models.UpdateUserById(user)
 			if err == nil {
 				bodyJSON.Set("status", "success")
 				bodyJSON.Set("msg", "edited")
