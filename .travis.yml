@@ -11,6 +11,6 @@ before_install:
   -in id_rsa.enc -out ~/.ssh/id_rsa -d
 after_success:
 - chmod 600 ~/.ssh/id_rsa   #还是Linux文件权限问题
-- ssh ubuntu@139.199.166.124 "cd ~/server/server && pwd"
+- ssh travis@139.199.166.124 -o StrictHostKeyChecking=no "cd ~/server/server && pwd"
 addons:
   ssh_known_hosts: 139.199.166.124
