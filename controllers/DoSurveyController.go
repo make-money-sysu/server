@@ -15,6 +15,14 @@ type DoSurveyController struct {
 	beego.Controller
 }
 
+// @Title Get
+// @Description 用来获取填写问卷的信息列表
+// @Param	survey_id							query		int		false	"问卷id"
+// @Param	recipient_id						query		int		false	"填写问卷者id"
+// @Param	content								query		string	false	"填写问卷的内容"
+// @Param	create_time							query		string	false	"填写问卷的时间"
+// @Success	200				{"status" : "success", "data": {填写问卷的信息列表数组}}
+// @router / [get]
 func (this *DoSurveyController) Get() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
@@ -45,6 +53,16 @@ func (this *DoSurveyController) Get() {
 	this.Ctx.Output.Body(body)
 }
 
+// @Title Post
+// @Description 用来上传填写问卷的信息
+// @Param	survey_id							body		int		true	"问卷id"
+// @Param	recipient_id						body		int		true	"填写问卷者id"
+// @Param	content								body		string	true	"填写问卷的内容"
+// @Success	200				{"status" : "success", "msg": "add do survey record succeed"}
+// @Failure 400				{"status" : "failed", "msg": "invalid survey id"}
+// @Failure 400				{"status" : "failed", "msg": "invalid user id"}
+// @Failure 400				{"status" : "failed", "msg": "invalid do survey json format"}
+// @router / [post]
 func (this *DoSurveyController) Post() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")

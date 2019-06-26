@@ -12,9 +12,18 @@ type LoginController struct {
 	beego.Controller
 }
 
-//登录相关逻辑
+// @Title Post
+// @Description 用来登录
+// @Param	id							body		int		true	"用户学号"
+// @Param	password					body		string	true	"用户密码"
+// @Success	200				{"status" : "success", "msg": "post success"}
+// @Failure 400				{"status" : "failed", "msg": "invalid login format"}
+// @Failure 403				{"status" : "failed", "msg": "id and password doesn't match"}
+// @router / [post]
 func (this *LoginController) Post() {
-	
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+
 	bodyJSON := simplejson.New()
 	fmt.Println(this.Ctx.Input.Header("cookie"))
 	if inputJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody); err == nil {
@@ -24,7 +33,7 @@ func (this *LoginController) Post() {
 			this.Ctx.Output.SetStatus(400)
 			bodyJSON.Set("status", "fail")
 			bodyJSON.Set("msg", "invalid login format")
-		}else{		
+		} else {
 			success := models.UserLogin(id, passord)
 			if success {
 				bodyJSON.Set("status", "success")
@@ -45,20 +54,17 @@ func (this *LoginController) Post() {
 	this.Ctx.Output.Body(body)
 }
 
+// @Title Delete
+// @Description 用来注销
+// @Success	200				{"status" : "success", "msg": "logout succeed"}
+// @router / [delete]
 func (this *LoginController) Delete() {
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
+	this.DelSession("id")
 	bodyJSON := simplejson.New()
-	//id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
-	fmt.Println(this.GetSession("id"))
-	if this.GetSession("id") != nil {
-		// id := this.GetSession("id").(int)
-		this.DelSession("id")
-		bodyJSON.Set("status", "success")
-		bodyJSON.Set("msg", "you have log out")
-	} else {
-		this.Ctx.Output.SetStatus(200)
-		bodyJSON.Set("status", "success")
-		bodyJSON.Set("msg", "you have not logined yet")
-	}
+	bodyJSON.Set("status", "success")
+	bodyJSON.Set("msg", "logout succeed")
 	body, _ := bodyJSON.MarshalJSON()
 	this.Ctx.Output.Body(body)
 }
