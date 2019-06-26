@@ -1,0 +1,34 @@
+# 首先要指定语言环境，`language`标签指定所使用的语言，语言名称作为标签指定版本
+language: go
+go: # 使用1.10.x版本的golang
+    - '1.10'
+
+sudo: required # 是否需要sudo权限
+
+# install用于执行命令之前设置环境，此处安装必要的依赖
+install:
+    - source /root/go_env.sh
+    - go get -u "github.com/astaxie/beego"
+    - go get -u "github.com/bitly/go-simplejson"
+
+# script执行构建的命令，此步的命令成功运行后即为构建成功
+script:
+    - pwd
+    - echo "script" #cd src/ && go build main.go
+
+# services包含所需的服务，比如此处用到mongodb数据库，需要在这里指出
+services:
+    - mysql
+
+# travis添加的解密命令
+before_install:
+    - openssl aes-256-cbc -K $encrypted_7669d81b39c5_key -iv $encrypted_7669d81b39c5_iv
+      -in id_rsa.enc -out ~/.ssh/id_rsa -d
+    - chmod 600 ~/.ssh/id_rsa
+
+# 构建成功后连接至服务器并运行部署脚本
+after_success:
+    - ssh ubuntu@139.199.166.124 "cd ~/ABT-server && sh ./build.sh"
+    
+addons:
+    ssh_known_hosts: 139.199.166.124 # 自己的服务器ip地址
