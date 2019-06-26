@@ -1,7 +1,9 @@
 language: go
 go:
-- 1.10
+- '1.10'
+
 sudo: required
+
 install:
 - echo "install"
 - go get -u "github.com/astaxie/beego"
