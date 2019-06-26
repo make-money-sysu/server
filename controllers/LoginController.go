@@ -44,3 +44,21 @@ func (this *LoginController) Post() {
 	body, _ := bodyJSON.MarshalJSON()
 	this.Ctx.Output.Body(body)
 }
+
+func (this *LoginController) Delete() {
+	bodyJSON := simplejson.New()
+	//id, err := strconv.Atoi(this.Ctx.Input.Param(":id"))
+	fmt.Println(this.GetSession("id"))
+	if this.GetSession("id") != nil {
+		// id := this.GetSession("id").(int)
+		this.DelSession("id")
+		bodyJSON.Set("status", "success")
+		bodyJSON.Set("msg", "you have log out")
+	} else {
+		this.Ctx.Output.SetStatus(200)
+		bodyJSON.Set("status", "success")
+		bodyJSON.Set("msg", "you have not logined yet")
+	}
+	body, _ := bodyJSON.MarshalJSON()
+	this.Ctx.Output.Body(body)
+}

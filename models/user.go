@@ -14,10 +14,10 @@ type User struct {
 	Password    string  `orm:"column(password);size(40)"`
 	RealName    string  `orm:"column(real_name);size(40)" json:"real_name"`
 	NickName    string  `orm:"column(nick_name);size(40)" json:"nick_name"`
-	Age         uint16  `orm:"column(age)"`
+	Age         int  `orm:"column(age)"`
 	Gender      string  `orm:"column(gender);size(1)"`
 	HeadPicture string  `orm:"column(head_picture)" json:"head_picture"`
-	Balance     float32 `orm:"column(balance);null"`
+	Balance     float64 `orm:"column(balance);null"`
 	Profession  string  `orm:"column(profession);size(40)"`
 	Grade       string  `orm:"column(grade);size(20)"`
 	Phone       string  `orm:"column(phone);size(20)"`

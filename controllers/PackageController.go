@@ -39,7 +39,7 @@ func (this *PackageController) Post() {
 		thisPackage.OwnerId, err = models.GetUserById(this.GetSession("id").(int))
 
 		thisPackage.CreateTime = time.Now()
-		thisPackage.Reward = float32(packageJSON.Get("reward").MustFloat64())
+		thisPackage.Reward = packageJSON.Get("reward").MustFloat64()
 		thisPackage.State = 0
 		thisPackage.Note = packageJSON.Get("note").MustString()
 		if thisPackage.OwnerId.Balance < thisPackage.Reward {

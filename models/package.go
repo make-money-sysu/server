@@ -15,7 +15,7 @@ type Package struct {
 	OwnerId    *User     `orm:"column(owner_id);rel(fk)"`
 	ReceiverId *User     `orm:"column(receiver_id);rel(fk);null"`
 	CreateTime time.Time `orm:"column(create_time);type(datetime);null"`
-	Reward     float32   `orm:"column(reward)"`
+	Reward     float64   `orm:"column(reward)"`
 	State      uint      `orm:"column(state);null"`
 	Note       string    `orm:"column(note);size(200);null"`
 }
