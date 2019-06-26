@@ -3,8 +3,10 @@ package controllers
 import (
 	"server/models"
 	"strconv"
+
 	// "fmt"
 	"time"
+
 	"github.com/bitly/go-simplejson"
 
 	"github.com/astaxie/beego"
@@ -14,6 +16,15 @@ type SurveyController struct {
 	beego.Controller
 }
 
+// @Title Get
+// @Description 用来获取问卷信息
+// @Param	id				query		int		false	"问卷的id"
+// @Param	publisher_id	query		int		false	"发布问卷用户的id"
+// @Param	title			query		string	false	"问卷的标题"
+// @Param	limit			query		int		false	"返回数量限制"
+// @Param	offset			query		int		false	"偏移量"
+// @Success	200				{"status" : "success", "data": {json格式的问卷信息}}
+// @router / [get]
 func (this *SurveyController) Get() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
@@ -67,6 +78,15 @@ func (this *SurveyController) Get() {
 	this.Ctx.Output.Body(body)
 }
 
+// @Title Post
+// @Description 用来上传问卷
+// @Param	title			body		string	true	"问卷的标题"
+// @Param	content			body		string	true	"问卷的内容"
+// @Success	200				{"status" : "success", "msg": "created", "id" : {id}}
+// @Failure 401				{"status" : "failed", "msg": "Login expired"}
+// @Failure 403				{"status" : "failed", "msg": "create survey failed"}
+// @Failure 400				{"status" : "failed", "msg": "invalid json format"}
+// @router / [post]
 func (this *SurveyController) Post() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
@@ -75,11 +95,11 @@ func (this *SurveyController) Post() {
 	var survey models.Survey
 	inputJSON, err := simplejson.NewJson(this.Ctx.Input.RequestBody)
 	if err == nil {
-		if nil == this.GetSession("id")  {
+		if nil == this.GetSession("id") {
 			this.Ctx.Output.SetStatus(401)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
-		}else{
+		} else {
 			publisher_id := this.GetSession("id").(int)
 			survey.PublisherId, _ = models.GetUserById(publisher_id)
 			survey.Title = inputJSON.Get("title").MustString()
@@ -105,6 +125,18 @@ func (this *SurveyController) Post() {
 	this.Ctx.Output.Body(body)
 }
 
+// @Title Put
+// @Description 用来修改问卷
+// @Param	title						body		string	true	"问卷的标题"
+// @Param	content						body		string	true	"问卷的内容"
+// @Param	state						body		int		true	"问卷的状态"
+// @Param	checked						body		int		true	"问卷是否被确认"
+// @Param	id							path		int		true	"问卷的id"
+// @Success	200				{"status" : "success", "msg": "updated"}
+// @Failure 401				{"status" : "failed", "msg": "Login expired"}
+// @Failure 403				{"status" : "failed", "msg": "update survey failed"}
+// @Failure 400				{"status" : "failed", "msg": "formate error"}
+// @router /:id [put]
 func (this *SurveyController) Put() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
@@ -116,12 +148,12 @@ func (this *SurveyController) Put() {
 	if err == nil {
 		var survey models.Survey
 		inputJSON, _ := simplejson.NewJson(this.Ctx.Input.RequestBody)
-		
-		if nil == this.GetSession("id")  {
+
+		if nil == this.GetSession("id") {
 			this.Ctx.Output.SetStatus(401)
 			bodyJSON.Set("status", "failed")
 			bodyJSON.Set("msg", "Login expired")
-		}else{
+		} else {
 			publisher_id := this.GetSession("id").(int)
 			survey.PublisherId, _ = models.GetUserById(publisher_id)
 			survey.Title = inputJSON.Get("Title").MustString()
@@ -140,7 +172,7 @@ func (this *SurveyController) Put() {
 				bodyJSON.Set("status", "update survey failed")
 			}
 		}
-	}else{
+	} else {
 		this.Ctx.Output.SetStatus(400)
 		bodyJSON.Set("status", "failed")
 		bodyJSON.Set("status", "formate error")
@@ -150,6 +182,15 @@ func (this *SurveyController) Put() {
 	this.Ctx.Output.Body(body)
 }
 
+// @Title Delete
+// @Description 用来删除问卷
+// @Param	id							path		int		true	"问卷的id"
+// @Success	200				{"status" : "success", "msg": "updated"}
+// @Failure 401				{"status" : "failed", "msg": "Login expired"}
+// @Failure 403				{"status" : "failed", "msg": "the id doesn't exist"}
+// @Failure 400				{"status" : "failed", "msg": "formate error"}
+// @Failure 404				{"status" : "failed", "msg": "not found"}
+// @router /:id [delete]
 func (this *SurveyController) Delete() {
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", "http://localhost:8080")
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
@@ -159,11 +200,11 @@ func (this *SurveyController) Delete() {
 	if err == nil {
 		to_delete, err := models.GetSurveyById(id)
 		if err == nil {
-			if nil == this.GetSession("id") || to_delete.PublisherId.Id != this.GetSession("id").(int)  {
+			if nil == this.GetSession("id") || to_delete.PublisherId.Id != this.GetSession("id").(int) {
 				this.Ctx.Output.SetStatus(401)
 				bodyJSON.Set("status", "failed")
 				bodyJSON.Set("msg", "Login expired")
-			}else{
+			} else {
 				err = models.DeleteSurvey(id)
 				if err == nil {
 					bodyJSON.Set("status", "success")
@@ -174,15 +215,15 @@ func (this *SurveyController) Delete() {
 					bodyJSON.Set("msg", "the id doesn't exist")
 				}
 			}
-		}else{	
+		} else {
 			this.Ctx.Output.SetStatus(404)
 			bodyJSON.Set("status", "failed")
-			bodyJSON.Set("status", "not found")
+			bodyJSON.Set("msg", "not found")
 		}
 	} else {
 		this.Ctx.Output.SetStatus(400)
 		bodyJSON.Set("status", "failed")
-		bodyJSON.Set("status", "formate error")
+		bodyJSON.Set("msg", "formate error")
 	}
 	body, _ := bodyJSON.MarshalJSON()
 	this.Ctx.Output.Body(body)
