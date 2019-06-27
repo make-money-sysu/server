@@ -17,7 +17,6 @@ install:
 script:
 - echo "script"
 - pwd
-- ll -lh
 - go version
 - go build main.go
 
@@ -27,7 +26,7 @@ before_install:
 
 after_success:
 - chmod 600 ~/.ssh/id_rsa   #还是Linux文件权限问题
-- ssh travis@139.199.166.124 -o StrictHostKeyChecking=no "cd ~/server/server"
+- ssh travis@139.199.166.124 -o StrictHostKeyChecking=no "cd /home/travis/gopath/src/github.com/make-money-sysu/server && main"
 
 addons:
   ssh_known_hosts: 139.199.166.124
