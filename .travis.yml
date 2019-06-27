@@ -11,6 +11,9 @@ install:
 
 script:
 - echo "script"
+- go version && bee version
+- cd ~/server/server
+- go build main.go
 
 before_install:
 - openssl aes-256-cbc -K $encrypted_bae4eee6b0f8_key -iv $encrypted_bae4eee6b0f8_iv
@@ -18,7 +21,7 @@ before_install:
 
 after_success:
 - chmod 600 ~/.ssh/id_rsa   #还是Linux文件权限问题
-- ssh travis@139.199.166.124 -o StrictHostKeyChecking=no "cd ~/server/server && go version && bee version"
+- ssh travis@139.199.166.124 -o StrictHostKeyChecking=no "cd ~/server/server && ./server.exe"
 
 addons:
   ssh_known_hosts: 139.199.166.124
