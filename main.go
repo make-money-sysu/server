@@ -15,5 +15,8 @@ func main() {
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
 	routers.Init()
+
+	beego.SetStaticPath("/","static")
+
 	beego.Run()
 }
