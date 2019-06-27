@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/make-money-sysu/server/routers"
+	"github.com/make-money-sysu/server/routers"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -14,6 +14,6 @@ func main() {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
+	routers.Init()
 	beego.Run()
 }
-
