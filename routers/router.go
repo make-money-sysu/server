@@ -5,8 +5,8 @@
 package routers
 
 import (
-	"server/controllers"
-
+	"github.com/make-money-sysu/server/controllers"
+	"github.com/astaxie/beego/plugins/cors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
 )

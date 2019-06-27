@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"server/models"
+	"github.com/make-money-sysu/server/models"
 
 	"github.com/astaxie/beego"
 	"github.com/bitly/go-simplejson"
