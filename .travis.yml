@@ -17,6 +17,7 @@ install:
 script:
 - echo "script"
 - pwd
+- ll -lh
 - go version
 - go build main.go
 
