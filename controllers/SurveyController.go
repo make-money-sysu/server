@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"server/models"
+	"github.com/make-money-sysu/server/models"
 	"strconv"
 
 	// "fmt"
@@ -103,6 +103,7 @@ func (this *SurveyController) Post() {
 			publisher_id := this.GetSession("id").(int)
 			survey.PublisherId, _ = models.GetUserById(publisher_id)
 			survey.Title = inputJSON.Get("title").MustString()
+			survey.State = inputJSON.Get("state").MustInt()
 			survey.Content = inputJSON.Get("content").MustString()
 			survey.CreateTime = time.Now()
 			if id, err := models.AddSurvey(&survey); err == nil {

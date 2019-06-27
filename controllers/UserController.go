@@ -3,8 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"server/models"
-
+	"github.com/make-money-sysu/server/models"
 	// "strconv"
 
 	"github.com/astaxie/beego"
