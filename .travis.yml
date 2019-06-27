@@ -21,6 +21,8 @@ script:
 - echo "script"
 - pwd
 - go version
+- cd docker
+- docker build -t goseverimage $PWD
 
 before_install:
 - openssl aes-256-cbc -K $encrypted_bae4eee6b0f8_key -iv $encrypted_bae4eee6b0f8_iv
