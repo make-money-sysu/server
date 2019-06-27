@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"server/models"
+	"github.com/make-money-sysu/server/models"
 	"strconv"
 	// "fmt"
 	"time"

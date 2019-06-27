@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "server/routers"
+	_ "github.com/make-money-sysu/server/routers"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
