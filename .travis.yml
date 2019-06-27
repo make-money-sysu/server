@@ -8,13 +8,16 @@ install:
 - echo "install"
 - go get -u "github.com/astaxie/beego"
 - go get -u "github.com/bitly/go-simplejson"
+- pwd
+# - cd ~/server/server
+# - go build main.go
+# - ls
 
 script:
 - echo "script"
 - pwd
-- go version && bee version
-# - cd ~/server/server
-# - go build main.go
+- go version
+- go build main.go
 
 before_install:
 - openssl aes-256-cbc -K $encrypted_bae4eee6b0f8_key -iv $encrypted_bae4eee6b0f8_iv
