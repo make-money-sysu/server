@@ -5,12 +5,12 @@
 package routers
 
 import (
-	"github.com/make-money-sysu/server/controllers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
+	"github.com/make-money-sysu/server/controllers"
 )
 
-func init() {
+func Init() {
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		AllowOrigins:     []string{"http://localhost:8080"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
