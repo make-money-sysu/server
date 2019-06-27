@@ -27,7 +27,7 @@ before_install:
 after_success:
 - chmod 600 ~/.ssh/id_rsa   #还是Linux文件权限问题
 - pwd
-- ssh travis@139.199.166.124 -o StrictHostKeyChecking=no "echo 'what?' && pwd"
+- ssh travis@139.199.166.124 -o StrictHostKeyChecking=no "cd /home/travis/gopath/src/github.com/make-money-sysu/server && pwd && ./main"
 - pwd
 
 addons:
