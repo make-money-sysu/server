@@ -1,4 +1,4 @@
-FROM goseverimage
+FROM mmsever:v1
 
 MAINTAINER makemoney
 
