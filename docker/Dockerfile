@@ -1,4 +1,4 @@
-FROM mmsever:v1
+FROM mmsever:v0
 
 MAINTAINER makemoney
 
