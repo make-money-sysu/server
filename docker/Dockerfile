@@ -1,4 +1,4 @@
-FROM mmsever:v0
+FROM golang
 
 MAINTAINER makemoney
 
