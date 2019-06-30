@@ -7,7 +7,8 @@ RUN go get -u "github.com/astaxie/beego" \
     && go get -u "github.com/go-sql-driver/mysql" \
     && go get -u "github.com/make-money-sysu/server"
 
-RUN yum install nodejs && yum install npm \
+RUN wget https://nodejs.org/dist/v8.9.4/node-v8.9.4.tar.gz && tar zxvf node-v8.9.4.tar.gz && cd node-v8.9.4 \
+    && ./configure && make install \
     && go get -u "github.com/make-money-sysu/Make-Money"  \
     && cd /go/src/github.com/make-money-sysu/Make-Money \
     && npm install \
