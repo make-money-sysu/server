@@ -7,7 +7,7 @@ RUN go get -u "github.com/astaxie/beego" \
     && go get -u "github.com/bitly/go-simplejson" \
     && go get -u "github.com/go-sql-driver/mysql" \
     && go get -u "github.com/make-money-sysu/server" \
-    && go get -u "github.com/make-money-sysu/Make-Money"  \
+    && go get -u "github.com/make-money-sysu/Make-Money"
 
 
 FROM node
