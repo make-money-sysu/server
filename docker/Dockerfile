@@ -1,8 +1,10 @@
+
+FROM node as builder
+
 MAINTAINER makemoney
-FROM node
 
 RUN git clone git@github.com:make-money-sysu/Make-Money.git \
-    && cd Make-Money && npm install \
+    && cd Make-Money/front-end/make-money/ && npm install \
     && npm run build
 
 FROM golang
@@ -12,6 +14,7 @@ RUN go get -u "github.com/astaxie/beego" \
     && go get -u "github.com/go-sql-driver/mysql" \
     && go get -u "github.com/make-money-sysu/server"
 
+COPY --from=builder /go/src/Make-Money/front-end/make-money/dist/* ./static
 
 WORKDIR /go/src/github.com/make-money-sysu/server
 
