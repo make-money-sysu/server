@@ -7,6 +7,12 @@ RUN go get -u "github.com/astaxie/beego" \
     && go get -u "github.com/go-sql-driver/mysql" \
     && go get -u "github.com/make-money-sysu/server"
 
+RUN yum install nodejs && yum install npm \
+    && go get -u "github.com/make-money-sysu/Make-Money"  \
+    && cd /go/src/github.com/make-money-sysu/Make-Money \
+    && npm install \
+    && npm run build \
+    && mv dist/* ../server/static
 
 WORKDIR /go/src/github.com/make-money-sysu/server
 
